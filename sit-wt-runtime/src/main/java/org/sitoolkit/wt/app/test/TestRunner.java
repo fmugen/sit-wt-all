@@ -70,9 +70,30 @@ public class TestRunner {
 
         ConfigurableApplicationContext appCtx = new AnnotationConfigApplicationContext(
                 RuntimeConfig.class);
+        List<TestResult> result = new ArrayList<>();
 
-        List<TestResult> result = runScript(appCtx, scriptPath, sheetName, caseNo, isParallel,
-                isEvidenceOpen);
+        String[] scriptList = scriptPath.split(",");
+        if (isParallel) {
+            ExecutorService executor = Executors.newCachedThreadPool();
+            for (String testScript : scriptList) {
+                executor.execute(() -> {
+                    result.addAll(runScript(appCtx, testScript, sheetName, caseNo, isParallel,
+                            isEvidenceOpen));
+                });
+            }
+            executor.shutdown();
+
+            try {
+                executor.awaitTermination(5, TimeUnit.MINUTES);
+            } catch (InterruptedException e) {
+                LOG.warn("スレッドの待機で例外が発生しました", e);
+            }
+        } else {
+            for (String testScript : scriptList) {
+                result.addAll(runScript(appCtx, testScript, sheetName, caseNo, isParallel,
+                        isEvidenceOpen));
+            }
+        }
 
         appCtx.close();
 
@@ -124,7 +145,7 @@ public class TestRunner {
 
         if (isEvidenceOpen) {
             EvidenceOpener opener = new EvidenceOpener();
-            opener.open();
+            opener.openTarget(new File(scriptPath));
         }
 
         return results;

@@ -86,10 +86,7 @@ public class FileTreeController implements Initializable {
         List<File> selectedFiles = new ArrayList<>();
 
         if (mode == Mode.NORMAL) {
-            // TODO recursive
-            fileTree.getSelectionModel().getSelectedItems()
-                    .forEach(item -> selectedFiles.add(item.getValue().getFile()));
-            return selectedFiles;
+            return getFilesRecursively(fileTree.getSelectionModel().getSelectedItems());
         }
 
         for (TreeItem<?> item : fileTree.getRoot().getChildren()) {
@@ -102,6 +99,25 @@ public class FileTreeController implements Initializable {
         }
 
         return selectedFiles;
+    }
+
+    public List<File> getFilesRecursively(List<?> fileTree) {
+        List<File> allFiles = new ArrayList<>();
+
+        for (Object item : fileTree) {
+            if (item instanceof FileTreeItem) {
+                FileTreeItem casted = (FileTreeItem) item;
+                File target = casted.getValue().getFile();
+
+                if (target.isDirectory()) {
+                    allFiles.addAll(getFilesRecursively(casted.getChildren()));
+                } else {
+                    allFiles.add(target);
+                }
+            }
+        }
+
+        return allFiles;
     }
 
     @FXML
