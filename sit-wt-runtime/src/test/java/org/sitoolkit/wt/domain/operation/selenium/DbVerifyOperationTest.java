@@ -1,13 +1,12 @@
 package org.sitoolkit.wt.domain.operation.selenium;
 
+import java.io.File;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
-import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sitoolkit.wt.domain.tester.SitTesterTestBase;
@@ -19,7 +18,7 @@ public class DbVerifyOperationTest extends SitTesterTestBase {
 
     @BeforeClass
     public static void runDerby() {
-        String derbyDir = System.getProperty("basedir") + "/target/derby/testdb";
+        String derbyDir = "target/derby/testdb";
         Connection conn = null;
         Boolean result = null;
 
@@ -30,8 +29,7 @@ public class DbVerifyOperationTest extends SitTesterTestBase {
             String files[] = { "tools/db/01-create-experiment.sql",
                     "tools/db/02-insert-experiment.sql" };
             for (String file : files) {
-                String query = Files.lines(Paths.get(file), Charset.forName("UTF-8"))
-                        .collect(Collectors.joining(System.getProperty("line.separator")));
+                String query = FileUtils.readFileToString(new File(file), Charset.forName("UTF-8"));
                 result = state.execute(query.replaceAll(";$", ""));
             }
 
