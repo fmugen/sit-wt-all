@@ -9,51 +9,48 @@ import org.sitoolkit.wt.gui.infra.process.ConversationProcessContainer;
 import org.sitoolkit.wt.gui.infra.process.ProcessParams;
 
 public class DiffEvidenceProcessClient {
-	
-	public ConversationProcess genMaskEvidence(String targetEvidence, ProcessParams params){
+
+    public void genMaskEvidence(File targetDir, ProcessParams params) {
         List<String> command = SitWtRuntimeUtils.buildJavaCommand();
-        command.add("-Devidence.target=" + targetEvidence);
-		command.add("org.sitoolkit.wt.app.compareevidence.MaskEvidenceGeneratorRunner");
+        command.add("org.sitoolkit.wt.app.compareevidence.MaskEvidenceGenerator");
+        command.add(targetDir.getPath());
 
         ConversationProcess process = ConversationProcessContainer.create();
         params.setCommand(command);
 
         process.start(params);
 
-        return process;
-	}
+    }
 
-	public ConversationProcess setBaseEvidence(String targetEvidence, ProcessParams params) {
+    public void setBaseEvidence(File targetDir, ProcessParams params) {
         List<String> command = SitWtRuntimeUtils.buildJavaCommand();
-        command.add("-Devidence.target=" + targetEvidence);
-		command.add("org.sitoolkit.wt.app.compareevidence.BaseEvidenceManagerRunner");
+        command.add("org.sitoolkit.wt.app.compareevidence.BaseEvidenceManager");
+        command.add(targetDir.getPath());
 
         ConversationProcess process = ConversationProcessContainer.create();
         params.setCommand(command);
 
         process.start(params);
 
-        return process;
-	}
+    }
 
-	public ConversationProcess genDiffEvidence(List<File> selectedFiles, ProcessParams params) {
+    public void genDiffEvidence(File baseDir, File targetDir, ProcessParams params) {
+
         List<String> command = SitWtRuntimeUtils.buildJavaCommand();
-        
-        int cnt = selectedFiles.size();
-        if (cnt == 2) {
-        	command.add("-Devidence.base=" + selectedFiles.get(0).getPath());
-        	command.add("-Devidence.target=" + selectedFiles.get(1).getPath());
-		} else if (cnt == 1) {
-            command.add("-Devidence.target=" + selectedFiles.get(0).getPath());			
-		}
-        
-		command.add("org.sitoolkit.wt.app.compareevidence.DiffEvidenceGeneratorRunner");
+
+        command.add("org.sitoolkit.wt.app.compareevidence.DiffEvidenceGenerator");
+
+        if (baseDir != null) {
+            command.add(baseDir.getPath());
+        }
+        if (targetDir != null) {
+            command.add(targetDir.getPath());
+        }
 
         ConversationProcess process = ConversationProcessContainer.create();
         params.setCommand(command);
 
         process.start(params);
 
-        return process;
-	}
+    }
 }

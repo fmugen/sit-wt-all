@@ -53,11 +53,11 @@ public class SitWtRuntimeProcessClient {
         if (testRunParams.isParallel()) {
             command.add("-Dsitwt.parallel=true");
         }
-        
+
         command.add("-Dsitwt.open-evidence=true");
 
         if (testRunParams.isCompareScreenshot()) {
-        	command.add("-Dsitwt.compare-screenshot=true");
+            command.add("-Dsitwt.compare-screenshot=true");
         }
 
         command.add("org.sitoolkit.wt.app.test.TestRunner");

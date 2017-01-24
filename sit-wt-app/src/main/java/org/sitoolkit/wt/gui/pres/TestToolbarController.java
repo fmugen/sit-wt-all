@@ -44,9 +44,9 @@ public class TestToolbarController implements Initializable {
 
     @FXML
     private ComboBox<String> baseUrlCombo;
-    
-	@FXML 
-	private ToggleButton compareToggle;
+
+    @FXML
+    private ToggleButton compareToggle;
 
     @FXML
     private Label pauseButton;

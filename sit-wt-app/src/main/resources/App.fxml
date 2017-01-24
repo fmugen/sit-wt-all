@@ -42,26 +42,7 @@
         </children>
       </HBox>
       <fx:include fx:id="testToolbar" source="TestToolbar.fxml" />
-      <ToolBar fx:id="genDiffEvidenceGroup">
-        <items>
-          <Separator orientation="VERTICAL" />
-          <Label onMouseClicked="#maskEvidence" styleClass="image-btn,mask-btn">
-          	<tooltip>
-          		<Tooltip text="スクリーンショットにマスク処理を施します"/>
-          	</tooltip>
-          </Label>
-          <Label onMouseClicked="#setBaseEvidence" styleClass="image-btn,base-btn">
-          	<tooltip>
-          		<Tooltip text="基準エビデンスを確定します"/>
-          	</tooltip>
-          </Label>
-          <Label onMouseClicked="#genDiffEvidence" styleClass="image-btn,diff-btn">
-          	<tooltip>
-          		<Tooltip text="比較エビデンスを生成します"/>
-          	</tooltip>
-          </Label>
-        </items>
-      </ToolBar>
+      <fx:include fx:id="diffEvidenceToolbar" source="DiffEvidenceToolbar.fxml" />
       <ToolBar fx:id="genScriptGroup">
         <items>
           <Separator orientation="VERTICAL" />

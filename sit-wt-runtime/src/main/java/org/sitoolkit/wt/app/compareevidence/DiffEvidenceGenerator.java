@@ -13,6 +13,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sitoolkit.wt.domain.evidence.DiffEvidence;
 import org.sitoolkit.wt.domain.evidence.EvidenceDir;
+import org.sitoolkit.wt.domain.evidence.EvidenceOpener;
 import org.sitoolkit.wt.domain.evidence.ReportOpener;
 import org.sitoolkit.wt.infra.TestException;
 import org.sitoolkit.wt.infra.template.TemplateEngine;
@@ -47,6 +48,33 @@ public class DiffEvidenceGenerator {
     private TemplateEngine templateEngine;
 
     private ScreenshotComparator screenshotComparator = new ScreenshotComparator();
+
+    public static void main(String[] args) {
+
+        ApplicationContext appCtx = new AnnotationConfigApplicationContext(
+                DiffEvidenceGeneratorConfig.class);
+        DiffEvidenceGenerator generator = appCtx.getBean(DiffEvidenceGenerator.class);
+
+        String targetPath = null;
+        String basePath = null;
+        int argCount = args.length;
+
+        if (argCount == 2) {
+            basePath = args[0];
+            targetPath = args[1];
+        } else if (argCount == 1) {
+            targetPath = args[0];
+        }
+
+        EvidenceDir targetDir = EvidenceDir.targetEvidenceDir(targetPath);
+        EvidenceDir baseDir = EvidenceDir.baseEvidenceDir(basePath, targetDir.getBrowser());
+
+        generator.generate(baseDir, targetDir, false);
+
+        EvidenceOpener opener = new EvidenceOpener();
+        opener.openCompareEvidence(targetDir);
+
+    }
 
     public static void staticExecute(EvidenceDir baseDir, EvidenceDir targetDir,
             boolean compareScreenshot, boolean evidenceOpen) {

@@ -60,19 +60,19 @@
 }
 
 .compare-toggle-btn {
-	-fx-background-image:url('/icon/ic_photo_black_18dp_1x.png');
+    -fx-background-image:url('/icon/ic_photo_black_18dp_1x.png');
 }
 
 .mask-btn {
-	-fx-background-image:url('/icon/ic_picture_in_picture_black_18dp_1x.png');
+    -fx-background-image:url('/icon/ic_picture_in_picture_black_18dp_1x.png');
 }
 
 .base-btn {
-	-fx-background-image:url('/icon/ic_done_black_18dp_1x.png');
+    -fx-background-image:url('/icon/ic_done_black_18dp_1x.png');
 }
 
 .diff-btn {
-	-fx-background-image:url('/icon/ic_compare_arrows_black_18dp_1x.png');
+    -fx-background-image:url('/icon/ic_compare_arrows_black_18dp_1x.png');
 }
 
 .record-btn {
