@@ -2,6 +2,7 @@ package org.sitoolkit.wt.app.test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,17 +31,16 @@ public class TestRunner {
 
         if (args.length < 1) {
             LOG.info("テストスクリプトを指定してください。");
-            LOG.info(">java {} [path/to/TestScript.xlsx]", TestRunner.class.getName());
+            LOG.info(">java {} [path/to/TestScript.xlsx!TestSheet#CaseNo]",
+                    TestRunner.class.getName());
             System.exit(1);
         }
 
-        String caseNo = args.length > 2 ? args[1] : "";
         boolean isParallel = Boolean.getBoolean("sitwt.parallel");
         boolean isEvidenceOpen = Boolean.getBoolean("sitwt.open-evidence");
 
         TestRunner runner = new TestRunner();
-        List<TestResult> results = runner.runScript(args[0], "TestScript", caseNo, isParallel,
-                isEvidenceOpen);
+        List<TestResult> results = runner.runScript(args[0], isParallel, isEvidenceOpen);
 
         for (TestResult resuls : results) {
             if (!resuls.isSuccess()) {
@@ -53,51 +53,26 @@ public class TestRunner {
     /**
      * テストスクリプトを実行します。
      *
-     * @param scriptPath
-     *            実行対象のテストスクリプト
-     * @param sheetName
-     *            テストスクリプト内で実行対象のシート名
-     * @param caseNo
-     *            実行対象のケース番号 指定しない場合はシート内の全ケースを実行します。
+     * @param testCases
+     *            実行するテストケース(scriptPath1,scriptPath2#case_1,scriptPath3!TestScript#case_1)
      * @param isParallel
      *            ケースを並列に実行する場合にtrue
      * @param isEvidenceOpen
      *            テスト実行後にエビデンスを開く場合にtrue
      * @return テスト結果
      */
-    public List<TestResult> runScript(String scriptPath, String sheetName, String caseNo,
-            boolean isParallel, boolean isEvidenceOpen) {
+    public List<TestResult> runScript(String testCases, boolean isParallel,
+            boolean isEvidenceOpen) {
 
         ConfigurableApplicationContext appCtx = new AnnotationConfigApplicationContext(
                 RuntimeConfig.class);
-        List<TestResult> result = new ArrayList<>();
 
-        String[] scriptList = scriptPath.split(",");
-        if (isParallel) {
-            ExecutorService executor = Executors.newCachedThreadPool();
-            for (String testScript : scriptList) {
-                executor.execute(() -> {
-                    result.addAll(runScript(appCtx, testScript, sheetName, caseNo, isParallel,
-                            isEvidenceOpen));
-                });
-            }
-            executor.shutdown();
-
-            try {
-                executor.awaitTermination(5, TimeUnit.MINUTES);
-            } catch (InterruptedException e) {
-                LOG.warn("スレッドの待機で例外が発生しました", e);
-            }
-        } else {
-            for (String testScript : scriptList) {
-                result.addAll(runScript(appCtx, testScript, sheetName, caseNo, isParallel,
-                        isEvidenceOpen));
-            }
-        }
+        List<TestResult> result = runScript(appCtx, testCases, isParallel, isEvidenceOpen);
 
         appCtx.close();
 
         return result;
+
     }
 
     /**
@@ -106,46 +81,24 @@ public class TestRunner {
      * @param appCtx
      *            {@link RuntimeConfig}で構成された
      *            {@code ConfigurableApplicationContext}
-     * @param scriptPath
-     *            実行対象のテストスクリプト
-     * @param sheetName
-     *            テストスクリプト内で実行対象のシート名
-     * @param caseNo
-     *            実行対象のケース番号 指定しない場合はシート内の全ケースを実行します。
+     * @param testCases
+     *            実行するテストケース(scriptPath1,scriptPath2#case_1,scriptPath3!TestScript#case_1)
      * @param isParallel
      *            ケースを並列に実行する場合にtrue
      * @param isEvidenceOpen
      *            テスト実行後にエビデンスを開く場合にtrue
      * @return テスト結果
      */
-    public List<TestResult> runScript(ConfigurableApplicationContext appCtx, String scriptPath,
-            String sheetName, String caseNo, boolean isParallel, boolean isEvidenceOpen) {
-
-        LOG.info("テストスクリプトを実行します。{} {} {}", scriptPath, sheetName, caseNo);
-
-        if (scriptPath.endsWith(".html")) {
-            scriptPath = selenium2script(scriptPath).getAbsolutePath();
-        }
+    public List<TestResult> runScript(ConfigurableApplicationContext appCtx, String testCases,
+            boolean isParallel, boolean isEvidenceOpen) {
 
         List<TestResult> results = new ArrayList<>();
+        List<HashMap<String, String>> testCaseMap = parseTestCases(testCases);
 
-        if (StringUtils.isEmpty(caseNo)) {
-
-            if (isParallel) {
-                results.addAll(runAllCasesInParallel(scriptPath, sheetName));
-            } else {
-                results.addAll(runAllCase(scriptPath, sheetName));
-            }
-
+        if (isParallel) {
+            results.addAll(runAllCasesInParallel(testCaseMap, isEvidenceOpen));
         } else {
-
-            results.add(runCase(scriptPath, sheetName, caseNo));
-
-        }
-
-        if (isEvidenceOpen) {
-            EvidenceOpener opener = new EvidenceOpener();
-            opener.openTarget(new File(scriptPath));
+            results.addAll(runAllCase(testCaseMap, isEvidenceOpen));
         }
 
         return results;
@@ -164,48 +117,85 @@ public class TestRunner {
         return script;
     }
 
-    private List<TestResult> runAllCase(String scriptPath, String sheetName) {
+    private List<TestResult> runAllCase(List<HashMap<String, String>> testCases,
+            boolean isEvidenceOpen) {
 
         List<TestResult> results = new ArrayList<>();
         TestScriptCatalog catalog = ApplicationContextHelper.getBean(TestScriptCatalog.class);
-        TestScript script = catalog.get(scriptPath, sheetName);
 
-        for (String caseNoInScript : script.getCaseNoMap().keySet()) {
-            results.add(runCase(scriptPath, sheetName, caseNoInScript));
+        for (HashMap<String, String> testCase : testCases) {
+            String scriptPath = testCase.get("scriptPath");
+            String sheetName = testCase.get("sheetName");
+            String caseNo = testCase.get("caseNo");
+            TestScript script = catalog.get(scriptPath, sheetName);
+
+            if (StringUtils.isEmpty(caseNo)) {
+                for (String caseNoInScript : script.getCaseNoMap().keySet()) {
+                    results.add(runCase(scriptPath, sheetName, caseNoInScript));
+                }
+
+            } else {
+                results.add(runCase(scriptPath, sheetName, caseNo));
+
+            }
+
+            if (isEvidenceOpen) {
+                EvidenceOpener opener = new EvidenceOpener();
+                opener.openTarget(new File(scriptPath));
+            }
         }
 
         return results;
     }
 
-    private List<TestResult> runAllCasesInParallel(String scriptPath, String sheetName) {
+    private List<TestResult> runAllCasesInParallel(List<HashMap<String, String>> testCases,
+            boolean isEvidenceOpen) {
 
         List<TestResult> results = new ArrayList<>();
         TestScriptCatalog catalog = ApplicationContextHelper.getBean(TestScriptCatalog.class);
-        TestScript script = catalog.get(scriptPath, sheetName);
-
-        // run last case in current thread to use WebDriver instance bound in
-        // current thread
-        List<String> caseNoList = new ArrayList<>(script.getCaseNoMap().keySet());
-
-        if (caseNoList.isEmpty()) {
-            LOG.warn("テストスクリプトにケースがありません　{} {}", scriptPath, sheetName);
-            return results;
-        }
-
-        String lastCaseNo = caseNoList.get(caseNoList.size() - 1);
-        caseNoList.remove(caseNoList.size() - 1);
-
         ExecutorService executor = Executors.newCachedThreadPool();
 
-        for (String caseNoInScript : caseNoList) {
+        for (HashMap<String, String> testCase : testCases) {
+            String scriptPath = testCase.get("scriptPath");
+            String sheetName = testCase.get("sheetName");
+            String caseNo = testCase.get("caseNo");
+            TestScript script = catalog.get(scriptPath, sheetName);
 
-            executor.execute(() -> {
-                results.add(runCase(scriptPath, sheetName, caseNoInScript));
-            });
+            if (StringUtils.isEmpty(caseNo)) {
+                // run last case in current thread to use WebDriver instance
+                // bound
+                // in current thread
+                List<String> caseNoList = new ArrayList<>(script.getCaseNoMap().keySet());
 
+                if (caseNoList.isEmpty()) {
+                    LOG.warn("テストスクリプトにケースがありません　{} {}", scriptPath, sheetName);
+                    continue;
+                }
+
+                String lastCaseNo = caseNoList.get(caseNoList.size() - 1);
+                caseNoList.remove(caseNoList.size() - 1);
+
+                for (String caseNoInScript : caseNoList) {
+
+                    executor.execute(() -> {
+                        results.add(runCase(scriptPath, sheetName, caseNoInScript));
+                    });
+
+                }
+
+                results.add(runCase(scriptPath, sheetName, lastCaseNo));
+
+            } else {
+                executor.execute(() -> {
+                    results.add(runCase(scriptPath, sheetName, caseNo));
+                });
+            }
+
+            if (isEvidenceOpen) {
+                EvidenceOpener opener = new EvidenceOpener();
+                opener.openTarget(new File(scriptPath));
+            }
         }
-
-        results.add(runCase(scriptPath, sheetName, lastCaseNo));
 
         executor.shutdown();
 
@@ -219,6 +209,8 @@ public class TestRunner {
     }
 
     private TestResult runCase(String scriptPath, String sheetName, String caseNo) {
+        LOG.info("テストスクリプトを実行します。{} {} {}", scriptPath, sheetName, caseNo);
+
         Tester tester = ApplicationContextHelper.getBean(Tester.class);
         TestEventListener listener = ApplicationContextHelper.getBean(TestEventListener.class);
 
@@ -239,5 +231,53 @@ public class TestRunner {
         }
 
         return result;
+    }
+
+    private List<HashMap<String, String>> parseTestCases(String testCases) {
+        List<HashMap<String, String>> testMapAll = new ArrayList<>();
+
+        for (String testCase : testCases.split(",")) {
+            HashMap<String, String> testMap = new HashMap<String, String>();
+
+            String scriptPath = "";
+            String sheetName = "TestScript";
+            String caseNo = "";
+            String[] testCondition = testCase.split("[#!]");
+
+            if (testCondition.length == 3) {
+                scriptPath = testCondition[0];
+                sheetName = testCondition[1];
+                caseNo = testCondition[2];
+
+            } else if (testCondition.length == 2) {
+                if (testCase.indexOf("#") != -1) {
+                    scriptPath = testCondition[0];
+                    caseNo = testCondition[1];
+
+                } else {
+                    scriptPath = testCondition[0];
+                    sheetName = testCondition[1];
+                }
+
+            } else if (testCondition.length == 1) {
+                scriptPath = testCondition[0];
+
+            } else {
+                LOG.warn("不正なテストスクリプトをスキップします {}", testCase);
+                continue;
+            }
+
+            if (scriptPath.endsWith(".html")) {
+                scriptPath = selenium2script(scriptPath).getAbsolutePath();
+            }
+
+            testMap.put("scriptPath", scriptPath);
+            testMap.put("sheetName", sheetName);
+            testMap.put("caseNo", caseNo);
+
+            testMapAll.add(testMap);
+        }
+
+        return testMapAll;
     }
 }
