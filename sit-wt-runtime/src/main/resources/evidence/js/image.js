@@ -1,14 +1,11 @@
 
 function init(){
 
-	var modeHelp = "スクリーンショット比較時における除外箇所を指定するモードです。";
-	modeHelp += "スクリーンショット上に配置した付箋の形にマスク処理がされます。"
-	modeHelp += "左記アイコンのクリックで付箋モードのON/OFFを切り替えることができます。"
-	var fusenHelp = "マスクをかけたい箇所にドラッグします。";
+	var modeHelp = "付箋モードのON/OFFを切り替ます。";
 	var trashBoxHelp = "削除したい付箋はここにドロップします。";
-	var loadHelp = "指定したJSONファイルを読み込み、付箋の配置を復元します。";
-	var saveHelp = "スクリーンショット上に配置した付箋の情報をJSON形式で保存します。";
-	var deleteHelp = "配置済みの付箋をすべて削除します。";
+	var loadHelp = "JSONを読み込み付箋の配置を復元します。";
+	var saveHelp = "付箋の配置情報をJSONで保存します。";
+	var deleteHelp = "配置済みの全付箋を削除します。";
 
 	$("body").prepend("<div id='modeSelect'></div>");
 	$("#modeSelect").append("<span class='help' title='" + modeHelp + "'><img class='icon' id='switch' src='img/icon/ic_swap_horiz_black_36dp.png'/></span> 付箋モード：<span id='mode'>OFF</span></p>");

@@ -39,3 +39,7 @@ div.fusen {
 	width: 96px;
     height: 96px;
 }
+
+.ui-tooltip {
+	max-width: 400px;
+}
