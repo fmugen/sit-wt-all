@@ -41,16 +41,23 @@ public class TestCase {
      * @param testCondition
      *            テストケース文字列(scriptPath!sheetName#caseNo)
      */
-    public void setCondition(String testCondition) {
-        if (testCondition.indexOf("!") != -1) {
-            setScriptPath(StringUtils.substringBefore(testCondition, "!"));
-            setSheetName(StringUtils.substringAfter(StringUtils.substringBefore(testCondition, "#"),
-                    "!"));
-            setCaseNo(StringUtils.substringAfter(testCondition, "#"));
+    public static TestCase parse(String testCondition) {
+        String scriptPath = "";
+        String sheetName = "";
+        String caseNo = "";
+
+        if (testCondition.contains("!")) {
+            scriptPath = StringUtils.substringBefore(testCondition, "!");
+            sheetName = StringUtils.substringAfter(StringUtils.substringBefore(testCondition, "#"),
+                    "!");
+            caseNo = StringUtils.substringAfter(testCondition, "#");
         } else {
-            setScriptPath(StringUtils.substringBefore(testCondition, "#"));
-            setCaseNo(StringUtils.substringAfter(testCondition, "#"));
+            scriptPath = StringUtils.substringBefore(testCondition, "#");
+            sheetName = "TestScript";
+            caseNo = StringUtils.substringAfter(testCondition, "#");
         }
+
+        return new TestCase(scriptPath, sheetName, caseNo);
     }
 
     public String getScriptPath() {

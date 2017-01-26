@@ -52,7 +52,7 @@ public class TestRunner {
     /**
      * テストスクリプトを実行します。
      *
-     * @param testConditions
+     * @param testCaseStr
      *            実行するテストケース(scriptPath1,scriptPath2#case_1,scriptPath3!TestScript#case_1)
      * @param isParallel
      *            ケースを並列に実行する場合にtrue
@@ -60,13 +60,13 @@ public class TestRunner {
      *            テスト実行後にエビデンスを開く場合にtrue
      * @return テスト結果
      */
-    public List<TestResult> runScript(String testConditions, boolean isParallel,
+    public List<TestResult> runScript(String testCaseStr, boolean isParallel,
             boolean isEvidenceOpen) {
 
         ConfigurableApplicationContext appCtx = new AnnotationConfigApplicationContext(
                 RuntimeConfig.class);
 
-        List<TestResult> result = runScript(appCtx, testConditions, isParallel, isEvidenceOpen);
+        List<TestResult> result = runScript(appCtx, testCaseStr, isParallel, isEvidenceOpen);
 
         appCtx.close();
 
@@ -80,7 +80,7 @@ public class TestRunner {
      * @param appCtx
      *            {@link RuntimeConfig}で構成された
      *            {@code ConfigurableApplicationContext}
-     * @param testConditions
+     * @param testCaseStr
      *            実行するテストケース(scriptPath1,scriptPath2#case_1,scriptPath3!TestScript#case_1)
      * @param isParallel
      *            ケースを並列に実行する場合にtrue
@@ -88,14 +88,13 @@ public class TestRunner {
      *            テスト実行後にエビデンスを開く場合にtrue
      * @return テスト結果
      */
-    public List<TestResult> runScript(ConfigurableApplicationContext appCtx, String testConditions,
+    public List<TestResult> runScript(ConfigurableApplicationContext appCtx, String testCaseStr,
             boolean isParallel, boolean isEvidenceOpen) {
 
         List<TestResult> results = new ArrayList<>();
         List<TestCase> allTestCase = new ArrayList<>();
-        for (String testCondition : testConditions.split(",")) {
-            TestCase testCase = new TestCase();
-            testCase.setCondition(testCondition);
+        for (String testCondition : testCaseStr.split(",")) {
+            TestCase testCase = TestCase.parse(testCondition);
 
             if (testCase.getScriptPath().endsWith(".html")) {
                 testCase.setScriptPath(selenium2script(testCase.getScriptPath()).getAbsolutePath());
