@@ -10,10 +10,15 @@ import org.sitoolkit.wt.gui.infra.util.StrUtils;
 
 public class ScriptProcessClient {
 
-    public ConversationProcess page2script(String driverType, String baseUrl,
+    public ConversationProcess page2script(String driverType, String baseUrl, String url, 
             ProcessParams params) {
         List<String> command = SitWtRuntimeUtils.buildJavaCommand();
         SitWtRuntimeUtils.addVmArgs(command, driverType, baseUrl);
+        
+        if (StrUtils.isNotEmpty(url)) {
+            command.add("-Durl=" + url);
+        }
+        
         command.add("org.sitoolkit.wt.app.page2script.Page2Script");
 
         ConversationProcess process = ConversationProcessContainer.create();

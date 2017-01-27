@@ -76,6 +76,10 @@ public class AppController implements Initializable {
     TestService testService = new TestService();
 
     ProjectService projectService = new ProjectService();
+    
+    private String ope2scriptGuidancePath = "guidance/guidance-ope2script.html";
+
+    private String page2scriptGuidancePath = "guidance/guidance-page2script.html";
 
     // private double stageHeight;
     //
@@ -177,8 +181,11 @@ public class AppController implements Initializable {
 
         projectState.setState(State.BROWSING);
 
+        File projectDir = projectState.getBaseDir();
+        File guidanceFile = new File(String.join("/", projectDir.getAbsolutePath(), page2scriptGuidancePath));
         conversationProcess = scriptService.page2script(testToolbarController.getDriverType(),
-                testToolbarController.getBaseUrl(), exitCode -> {
+                testToolbarController.getBaseUrl(), guidanceFile.toURI().toString(), 
+                exitCode -> {
                     projectState.reset();
                 });
 
@@ -194,7 +201,9 @@ public class AppController implements Initializable {
         messageView.startMsg("ブラウザ操作の記録はFirefoxとSelenium IDE Pluginを使用します。");
         messageView.addMsg("Selenium IDEで記録したテストスクリプトをhtml形式でtestscriptディレクトリに保存してください。");
 
-        scriptService.ope2script(testToolbarController.getBaseUrl());
+        File projectDir = projectState.getBaseDir();
+        File guidanceFile = new File(String.join("/", projectDir.getAbsolutePath(), ope2scriptGuidancePath));
+        scriptService.ope2script(guidanceFile.toURI().toString());
 
     }
 
