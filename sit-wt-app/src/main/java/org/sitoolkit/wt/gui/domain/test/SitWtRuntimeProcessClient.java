@@ -13,11 +13,11 @@ public class SitWtRuntimeProcessClient {
 
     /**
      * 次のコマンドを実行します。
-     * 
+     *
      * <pre>
      *  mvn dependency:build-classpath -f ${pomFile}
      * </pre>
-     * 
+     *
      * @param pomFile
      *            pom.xls
      * @param params
@@ -58,7 +58,11 @@ public class SitWtRuntimeProcessClient {
 
         command.add("org.sitoolkit.wt.app.test.TestRunner");
 
-        command.add(StrUtils.join(testRunParams.getScripts()));
+        if (testRunParams.getScripts() != null) {
+            command.add(StrUtils.join(testRunParams.getScripts()));
+        } else {
+            command.add(testRunParams.getTargetScriptsStr());
+        }
 
         params.setCommand(command);
 

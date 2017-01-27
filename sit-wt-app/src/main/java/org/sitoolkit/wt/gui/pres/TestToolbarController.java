@@ -106,26 +106,35 @@ public class TestToolbarController implements Initializable {
     @FXML
     public void run() {
         messageView.startMsg("テストを実行します。");
-        runTest(false, false);
+        runTest(false, false, null);
     }
 
     @FXML
     public void debug() {
         messageView.startMsg("テストをデバッグします。");
-        runTest(true, false);
+        runTest(true, false, null);
     }
 
     @FXML
     public void runParallel() {
         messageView.startMsg("テストを並列実行します。");
-        runTest(false, true);
+        runTest(false, true, null);
     }
 
-    private void runTest(boolean isDebug, boolean isParallel) {
+    public void runNominateCase(String targetScriptsStr) {
+        messageView.startMsg("指定ケースのテストを実行します。");
+        runTest(false, false, targetScriptsStr);
+    }
+
+    private void runTest(boolean isDebug, boolean isParallel, String targetScriptsStr) {
         projectState.setState(isDebug ? State.DEBUGGING : State.RUNNING);
 
         TestRunParams params = new TestRunParams();
-        params.setScripts(fileTreeController.getSelectedFiles());
+        if (StrUtils.isEmpty(targetScriptsStr)) {
+            params.setScripts(fileTreeController.getSelectedFiles());
+        } else {
+            params.setTargetScriptsStr(targetScriptsStr);
+        }
         params.setBaseDir(projectState.getBaseDir());
         params.setDebug(isDebug);
         params.setParallel(isParallel);
@@ -146,7 +155,7 @@ public class TestToolbarController implements Initializable {
             Alert alert = new Alert(AlertType.INFORMATION);
             alert.setTitle("");
             alert.setContentText("");
-            alert.setHeaderText("実行するテストスクリプトを選択してください。テストスクリプトの拡張子はxlsx、xlsx、csv、htmlです。");
+            alert.setHeaderText("実行するテストスクリプトを選択してください。テストスクリプトの拡張子はxlsx、csv、htmlです。");
             alert.show();
             projectState.reset();
         } else {

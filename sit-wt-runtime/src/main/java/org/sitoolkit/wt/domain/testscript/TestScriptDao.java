@@ -1,6 +1,7 @@
 package org.sitoolkit.wt.domain.testscript;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,9 +16,12 @@ import org.sitoolkit.util.tabledata.TableDataDao;
 import org.sitoolkit.util.tabledata.TableDataMapper;
 import org.sitoolkit.util.tabledata.csv.TableDataDaoCsvImpl;
 import org.sitoolkit.util.tabledata.excel.TableDataDaoExcelImpl;
+import org.sitoolkit.wt.app.config.RuntimeConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class TestScriptDao {
 
@@ -42,6 +46,32 @@ public class TestScriptDao {
 
     @Resource
     FileOverwriteChecker fileOverwriteChecker;
+
+    public static void main(String[] args) {
+        ConfigurableApplicationContext appCtx = new AnnotationConfigApplicationContext(
+                RuntimeConfig.class);
+        TestScriptDao testScriptDao = appCtx.getBean(TestScriptDao.class);
+
+        if (args.length < 1) {
+            testScriptDao.log.info("テストスクリプトを指定してください。");
+            testScriptDao.log.info(">java {} [scriptPath sheetName]",
+                    TestScriptDao.class.getName());
+            System.exit(1);
+        }
+
+        String scriptPath = args[0];
+        String sheetName = args[1];
+
+        TestScript testScript = testScriptDao.load(scriptPath, sheetName, true);
+
+        List<String> caseNoList = new ArrayList<>(testScript.getCaseNoMap().keySet());
+        for (String caseNo : caseNoList) {
+            System.out.println("Case No:" + caseNo);
+        }
+
+        appCtx.close();
+        System.exit(0);
+    }
 
     public TestScript load(String scriptPath, String sheetName, boolean loadCaseOnly) {
         return load(new File(scriptPath), sheetName, loadCaseOnly);

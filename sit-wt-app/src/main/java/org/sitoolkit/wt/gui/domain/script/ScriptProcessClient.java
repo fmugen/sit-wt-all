@@ -41,4 +41,19 @@ public class ScriptProcessClient {
 
         return process;
     }
+
+    public ConversationProcess getCaseNo(String scriptPath, ProcessParams params) {
+        List<String> command = SitWtRuntimeUtils.buildJavaCommand();
+
+        command.add("org.sitoolkit.wt.domain.testscript.TestScriptDao");
+        command.add(scriptPath);
+        command.add("TestScript");
+
+        params.setCommand(command);
+
+        ConversationProcess process = ConversationProcessContainer.create();
+        process.start(params);
+
+        return process;
+    }
 }

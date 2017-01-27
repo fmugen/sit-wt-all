@@ -21,4 +21,13 @@ public class ScriptService {
     public ConversationProcess ope2script(String url) {
         return client.ope2script(url);
     }
+
+    public ConversationProcess getCaseNo(String scriptPath, GetCaseNoStdoutListener listener, ProcessExitCallback callback) {
+        ProcessParams params = new ProcessParams();
+        params.getExitClallbacks().add(callback);
+        params.getStdoutListeners().add(listener);
+
+        return client.getCaseNo(scriptPath, params);
+
+    }
 }

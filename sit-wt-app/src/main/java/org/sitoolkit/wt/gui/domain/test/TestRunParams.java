@@ -17,6 +17,8 @@ public class TestRunParams {
 
     private String driverType;
 
+    private String targetScriptsStr;
+
     public TestRunParams() {
     }
 
@@ -66,6 +68,14 @@ public class TestRunParams {
 
     public void setBaseDir(File baseDir) {
         this.baseDir = baseDir;
+    }
+
+    public String getTargetScriptsStr() {
+        return targetScriptsStr;
+    }
+
+    public void setTargetScriptsStr(String targetScriptsStr) {
+        this.targetScriptsStr = targetScriptsStr;
     }
 
 }

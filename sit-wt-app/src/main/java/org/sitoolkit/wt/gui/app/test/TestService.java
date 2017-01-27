@@ -14,6 +14,7 @@ import org.sitoolkit.wt.gui.infra.process.ConversationProcess;
 import org.sitoolkit.wt.gui.infra.process.ProcessExitCallback;
 import org.sitoolkit.wt.gui.infra.process.ProcessParams;
 import org.sitoolkit.wt.gui.infra.util.FileIOUtils;
+import org.sitoolkit.wt.gui.infra.util.StrUtils;
 import org.sitoolkit.wt.gui.infra.util.SystemUtils;
 
 public class TestService {
@@ -27,11 +28,20 @@ public class TestService {
     public ConversationProcess runTest(TestRunParams params, SitWtDebugStdoutListener listener,
             ProcessExitCallback callback) {
 
-        List<File> testScripts = SitWtRuntimeUtils.filterTestScripts(params.getScripts());
+        if (params.getScripts() != null) {
+            List<File> testScripts = SitWtRuntimeUtils.filterTestScripts(params.getScripts());
 
-        if (testScripts.isEmpty()) {
-            return null;
+            if (testScripts.isEmpty()) {
+                return null;
+            }
+        } else {
+            String targetStr = params.getTargetScriptsStr();
+
+            if (StrUtils.isEmpty(targetStr)) {
+                return null;
+            }
         }
+
 
         ProcessParams processParams = new ProcessParams();
 

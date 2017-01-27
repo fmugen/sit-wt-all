@@ -14,6 +14,8 @@
       <ContextMenu>
         <items>
           <MenuItem mnemonicParsing="false" onAction="#open" text="開く" />
+          <MenuItem mnemonicParsing="false" onAction="#allExecute" text="実行"/>
+          <MenuItem mnemonicParsing="false" onAction="#selectExecute" text="ケースを選択して実行"/>
           <Menu text="新規">
             <MenuItem mnemonicParsing="false" text="スクリプト" onAction="#newScript" />
             <MenuItem mnemonicParsing="false" text="フォルダー" onAction="#newFolder" />
