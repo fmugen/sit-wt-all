@@ -10,15 +10,15 @@ public class ScriptService {
     ScriptProcessClient client = new ScriptProcessClient();
 
     public ConversationProcess page2script(String driverType, String baseUrl,
-            String url, ProcessExitCallback callback) {
+            ProcessExitCallback callback) {
 
         ProcessParams params = new ProcessParams();
         params.getExitClallbacks().add(callback);
 
-        return client.page2script(driverType, baseUrl, url, params);
+        return client.page2script(driverType, baseUrl, params);
     }
 
-    public ConversationProcess ope2script(String url) {
-        return client.ope2script(url);
+    public ConversationProcess ope2script(String baseUrl) {
+        return client.ope2script(baseUrl);
     }
 }

@@ -218,6 +218,10 @@ public class TestToolbarController implements Initializable {
     public String getBaseUrl() {
         return baseUrlCombo.getValue();
     }
+    
+    public String getInputBaseUrl(){
+        return this.baseUrlCombo.getEditor().getText().trim();
+    }
 
     public String getDriverType() {
         return browserChoice.getValue();

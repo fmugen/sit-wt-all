@@ -66,10 +66,52 @@ public class SeleniumPageLietener implements PageListener {
         String driverType = driver.toString();
         LOG.info("ブラウザを起動します {}", driverType);
 
-        String url = System.getProperty("url");
-        if (StringUtils.isNotEmpty(url)) {
-            driver.get(url);
+        removeBaseUrlLink(guidanceFile);
+        String baseUrl = System.getProperty("baseUrl");
+        if (StringUtils.isNotEmpty(baseUrl)) {
+            addBaseUrlLink(guidanceFile, baseUrl);
         }
+        driver.get(guidanceFile.toURI().toString());
+    }
+
+    private void removeBaseUrlLink(File guidanceFile) {
+
+        try {
+            String guidanceHtml = FileUtils.readFileToString(guidanceFile, "UTF-8");
+
+            StringBuilder sb = new StringBuilder();
+            for (String line : guidanceHtml.split("\n")) {
+                if (line.contains("baseUrl") || line.contains("<hr/>")) {
+                    continue;
+                }
+                sb.append(line + "\n");
+            }
+
+            FileUtils.writeStringToFile(guidanceFile, sb.toString(), "UTF-8");
+        } catch (IOException e) {
+            LOG.error("ガイダンスファイルへのbaseUrlリンク削除処理で例外が発生しました", e);
+        }
+    }
+
+    private void addBaseUrlLink(File guidanceFile, String baseUrl) {
+
+        try {
+            String guidanceHtml = FileUtils.readFileToString(guidanceFile, "UTF-8");
+
+            StringBuilder sb = new StringBuilder();
+            for (String line : guidanceHtml.split("\n")) {
+                sb.append(line + "\n");
+                if (line.trim().equals("</ol>")) {
+                    sb.append("      <hr/>\n");
+                    sb.append("      <p><a href=\"" + baseUrl + "\">baseUrl</a>を開く。</p>\n");
+                }
+            }
+
+            FileUtils.writeStringToFile(guidanceFile, sb.toString(), "UTF-8");
+        } catch (IOException e) {
+            LOG.error("ガイダンスファイルへのbaseUrlリンク追加処理で例外が発生しました", e);
+        }
+
     }
 
     @Override

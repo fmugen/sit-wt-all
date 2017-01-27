@@ -10,15 +10,10 @@ import org.sitoolkit.wt.gui.infra.util.StrUtils;
 
 public class ScriptProcessClient {
 
-    public ConversationProcess page2script(String driverType, String baseUrl, String url, 
+    public ConversationProcess page2script(String driverType, String baseUrl,
             ProcessParams params) {
         List<String> command = SitWtRuntimeUtils.buildJavaCommand();
         SitWtRuntimeUtils.addVmArgs(command, driverType, baseUrl);
-        
-        if (StrUtils.isNotEmpty(url)) {
-            command.add("-Durl=" + url);
-        }
-        
         command.add("org.sitoolkit.wt.app.page2script.Page2Script");
 
         ConversationProcess process = ConversationProcessContainer.create();
@@ -29,11 +24,11 @@ public class ScriptProcessClient {
         return process;
     }
 
-    public ConversationProcess ope2script(String url) {
+    public ConversationProcess ope2script(String baseUrl) {
         List<String> command = SitWtRuntimeUtils.buildJavaCommand();
 
-        if (StrUtils.isNotEmpty(url)) {
-            command.add("-Durl=" + url);
+        if (StrUtils.isNotEmpty(baseUrl)) {
+            command.add("-DbaseUrl=" + baseUrl);
         }
 
         command.add("org.sitoolkit.wt.app.ope2script.FirefoxOpener");
