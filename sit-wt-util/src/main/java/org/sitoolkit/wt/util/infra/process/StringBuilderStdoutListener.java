@@ -1,4 +1,4 @@
-package org.sitoolkit.wt.gui.infra.process;
+package org.sitoolkit.wt.util.infra.process;
 
 public class StringBuilderStdoutListener implements StdoutListener {
 

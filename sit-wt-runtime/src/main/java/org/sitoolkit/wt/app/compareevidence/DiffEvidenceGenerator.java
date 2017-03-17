@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 
@@ -17,6 +18,7 @@ import org.sitoolkit.wt.domain.evidence.EvidenceOpener;
 import org.sitoolkit.wt.domain.evidence.ReportOpener;
 import org.sitoolkit.wt.infra.TestException;
 import org.sitoolkit.wt.infra.template.TemplateEngine;
+import org.sitoolkit.wt.util.infra.proxy.ProxySetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -156,11 +158,16 @@ public class DiffEvidenceGenerator {
         }
 
         try {
+            ProxySetting proxySetting = new ProxySetting();
+            Executors.newSingleThreadExecutor().submit(() -> proxySetting.setProxy()).get();
+
             URL url = ResourceUtils.getURL("classpath:evidence/" + compareEvidenceResource);
             File dstFile = new File(targetDir.getDir(), compareEvidenceResource);
             FileUtils.copyURLToFile(url, dstFile);
         } catch (IOException e) {
             LOG.error("リソースファイルのコピー処理で例外が発生しました", e);
+        } catch (Exception exp) {
+            LOG.error("プロキシの取得で例外が発生しました", exp);
         }
 
         return allSsMatches;

@@ -1,9 +1,9 @@
-package org.sitoolkit.wt.gui.infra;
+package org.sitoolkit.wt.util.infra;
 
 public class UnExpectedException extends RuntimeException {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -4741737562740700154L;
 

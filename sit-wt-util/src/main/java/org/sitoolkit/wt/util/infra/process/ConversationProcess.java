@@ -1,7 +1,6 @@
-package org.sitoolkit.wt.gui.infra.process;
+package org.sitoolkit.wt.util.infra.process;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -10,8 +9,8 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.sitoolkit.wt.gui.infra.UnExpectedException;
-import org.sitoolkit.wt.gui.infra.concurrent.ExecutorContainer;
+import org.sitoolkit.wt.util.infra.UnExpectedException;
+import org.sitoolkit.wt.util.infra.concurrent.ExecutorContainer;
 
 public class ConversationProcess {
 
@@ -35,8 +34,8 @@ public class ConversationProcess {
 
         File directory = params.getDirectory();
         if (directory == null) {
-			directory = ProcessParams.getDefaultCurrentDir();
-		}
+            directory = ProcessParams.getDefaultCurrentDir();
+        }
         List<String> command = params.getCommand();
 
         if (process != null && process.isAlive()) {
@@ -55,21 +54,32 @@ public class ConversationProcess {
             stdoutListeners.add(LOG_STDOUT_LISTENER);
             stdoutListeners.addAll(params.getStdoutListeners());
             stdoutListeners.addAll(StdoutListenerContainer.get().getListeners());
-
-            ExecutorContainer.get().execute(() -> scan(process.getInputStream(), stdoutListeners));
+            if (params.getProcessWait()) {
+                ExecutorContainer.get().submit(() -> scan(process.getInputStream(), stdoutListeners)).get();
+            } else {
+                ExecutorContainer.get().execute(() -> scan(process.getInputStream(), stdoutListeners));
+            }
 
             List<StdoutListener> stderrListeners = new ArrayList<>();
             stderrListeners.add(LOG_STDERR_LISTENER);
 
-            ExecutorContainer.get().execute(() -> scan(process.getErrorStream(), stderrListeners));
+            if (params.getProcessWait()) {
+                ExecutorContainer.get().submit(() -> scan(process.getErrorStream(), stderrListeners)).get();
+            } else {
+                ExecutorContainer.get().execute(() -> scan(process.getErrorStream(), stderrListeners));
+            }
 
             processWriter = new PrintWriter(process.getOutputStream());
 
             if (!params.getExitClallbacks().isEmpty()) {
-                ExecutorContainer.get().execute(() -> wait(params.getExitClallbacks()));
+                if (params.getProcessWait()) {
+                    ExecutorContainer.get().submit(() -> wait(params.getExitClallbacks())).get();
+                } else {
+                    ExecutorContainer.get().execute(() -> wait(params.getExitClallbacks()));
+                }
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new UnExpectedException(e);
         }
     }

@@ -3,6 +3,7 @@ package org.sitoolkit.wt.infra.firefox;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -13,6 +14,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.sitoolkit.wt.infra.MultiThreadUtils;
 import org.sitoolkit.wt.infra.SitRepository;
 import org.sitoolkit.wt.infra.process.ProcessUtils;
+import org.sitoolkit.wt.util.infra.proxy.ProxySetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
@@ -57,6 +59,8 @@ public class FirefoxManager {
         } else {
 
             try {
+                ProxySetting proxySetting = new ProxySetting();
+                Executors.newSingleThreadExecutor().submit(() -> proxySetting.setProxy()).get();
 
                 // TODO 外部化
                 URL xpiUrl = new URL(
@@ -69,6 +73,8 @@ public class FirefoxManager {
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            } catch (Exception exp) {
+                throw new RuntimeException(exp);
             }
         }
 
@@ -109,6 +115,9 @@ public class FirefoxManager {
             LOG.info("Firefoxはダウンロード済みです {}", ffInstaller.getAbsolutePath());
         } else {
             try {
+                ProxySetting proxySetting = new ProxySetting();
+                Executors.newSingleThreadExecutor().submit(() -> proxySetting.setProxy()).get();
+
                 // TODO 外部化
                 URL url = new URL(
                         "https://ftp.mozilla.org/pub/firefox/releases/47.0.1/win64/ja/Firefox%20Setup%2047.0.1.exe");
@@ -122,6 +131,8 @@ public class FirefoxManager {
 
             } catch (IOException e) {
                 throw new RuntimeException("Firefoxのダウンロードで例外が発生しました", e);
+            } catch (Exception exp) {
+                throw new RuntimeException("Firefoxのダウンロードで例外が発生しました", exp);
             }
         }
 
@@ -153,6 +164,9 @@ public class FirefoxManager {
             LOG.info("Firefoxはダウンロード済みです {}", ffInstaller.getAbsolutePath());
         } else {
             try {
+                ProxySetting proxySetting = new ProxySetting();
+                Executors.newSingleThreadExecutor().submit(() -> proxySetting.setProxy()).get();
+
                 // TODO 外部化
                 URL url = new URL(
                         "https://ftp.mozilla.org/pub/firefox/releases/47.0.1/mac/ja-JP-mac/Firefox%2047.0.1.dmg");
@@ -164,6 +178,8 @@ public class FirefoxManager {
                 ProcessUtils.execute("chmod", "777", ffInstaller.getAbsolutePath());
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            } catch (Exception exp) {
+                throw new RuntimeException(exp);
             }
         }
 

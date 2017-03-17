@@ -8,6 +8,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -25,6 +26,7 @@ import org.sitoolkit.wt.infra.ConfigurationException;
 import org.sitoolkit.wt.infra.PropertyUtils;
 import org.sitoolkit.wt.infra.SitRepository;
 import org.sitoolkit.wt.infra.process.ProcessUtils;
+import org.sitoolkit.wt.util.infra.proxy.ProxySetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,6 +125,9 @@ public class WebDriverInstaller {
 
         try {
             if (!installFile.exists()) {
+                ProxySetting proxySetting = new ProxySetting();
+                Executors.newSingleThreadExecutor().submit(() -> proxySetting.setProxy()).get();
+
                 URL downloadUrl = new URL(safariBinaryInfo.downloadUrl);
                 LOG.info("Safari Driverをダウンロードします {} -> {}", downloadUrl,
                         installFile.getAbsolutePath());
@@ -143,6 +148,8 @@ public class WebDriverInstaller {
 
         } catch (IOException e) {
             throw new ConfigurationException(e);
+        } catch (Exception exp) {
+            throw new ConfigurationException(exp);
         }
     }
 
@@ -181,6 +188,9 @@ public class WebDriverInstaller {
             if (downloadFile.exists()) {
                 LOG.info("{}はダウンロード済みです {}", binaryInfo.sysPropKey, downloadFile.getAbsolutePath());
             } else {
+                ProxySetting proxySetting = new ProxySetting();
+                Executors.newSingleThreadExecutor().submit(() -> proxySetting.setProxy()).get();
+
                 LOG.info("{}をダウンロードします {} -> {}", new Object[] { binaryInfo.sysPropKey, downloadUrl,
                         downloadFile.getAbsolutePath() });
                 FileUtils.copyURLToFile(downloadUrl, downloadFile);
@@ -208,6 +218,8 @@ public class WebDriverInstaller {
             }
         } catch (IOException e) {
             throw new ConfigurationException(e);
+        } catch (Exception exp) {
+            throw new ConfigurationException(exp);
         }
 
         return installFile.getAbsolutePath();

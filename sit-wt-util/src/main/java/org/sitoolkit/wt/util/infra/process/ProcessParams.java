@@ -1,4 +1,4 @@
-package org.sitoolkit.wt.gui.infra.process;
+package org.sitoolkit.wt.util.infra.process;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.Map;
 public class ProcessParams {
 
 	private static File defaultCurrentDir;
-	
+
     private List<StdoutListener> stdoutListeners = new ArrayList<>();
 
     private File directory;
@@ -19,6 +19,8 @@ public class ProcessParams {
     private Map<String, String> enviroment = new HashMap<>();
 
     private List<ProcessExitCallback> exitClallbacks = new ArrayList<>();
+
+    private Boolean processWait = false;
 
     public ProcessParams() {
     }
@@ -69,6 +71,14 @@ public class ProcessParams {
 
     public void setExitClallbacks(List<ProcessExitCallback> exitClallbacks) {
         this.exitClallbacks = exitClallbacks;
+    }
+
+    public Boolean getProcessWait() {
+        return processWait;
+    }
+
+    public void setProcessWait(Boolean processWait) {
+        this.processWait = processWait;
     }
 
 }

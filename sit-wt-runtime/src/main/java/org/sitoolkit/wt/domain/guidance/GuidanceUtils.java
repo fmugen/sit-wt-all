@@ -3,9 +3,11 @@ package org.sitoolkit.wt.domain.guidance;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.sitoolkit.wt.util.infra.proxy.ProxySetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
@@ -19,7 +21,7 @@ public class GuidanceUtils {
 
     /**
      * ガイダンスファイルをカレントディレクトリに展開します。
-     * 
+     *
      * @param resources
      *            ガイダンスの表示に必要なファイル
      */
@@ -29,7 +31,7 @@ public class GuidanceUtils {
 
     /**
      * ガイダンスファイルを指定のディレクトリに展開します。
-     * 
+     *
      * @param resources
      *            ガイダンスの表示に必要なファイル
      * @param destDir
@@ -39,6 +41,9 @@ public class GuidanceUtils {
 
         for (String res : resources) {
             try {
+                ProxySetting proxySetting = new ProxySetting();
+                Executors.newSingleThreadExecutor().submit(() -> proxySetting.setProxy()).get();
+
                 URL resUrl = ResourceUtils.getURL("classpath:" + res);
                 File destFile = new File(destDir, res);
                 if (destFile.exists()) {
@@ -48,6 +53,8 @@ public class GuidanceUtils {
                 FileUtils.copyURLToFile(resUrl, destFile);
             } catch (IOException e) {
                 LOG.warn("ガイダンスファイルの展開で例外が発生しました", e);
+            } catch (Exception exp) {
+                LOG.warn("プロキシの取得で例外が発生しました", exp);
             }
         }
 
