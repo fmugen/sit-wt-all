@@ -96,9 +96,9 @@ public class ProxySetting {
                     break;
 
                 case "ProxyServer" :
-                    if (proxyDesc[0].contains(";")) {
+                    if (proxyDesc[2].contains(";")) {
                         for (String protocolSetting : proxyDesc[2].split(";")) {
-                            String[] settings = protocolSetting.split("=:");
+                            String[] settings = protocolSetting.split("[=:]");
                             String protocol = settings[0];
 
                             if ("http".equals(protocol) || "https".equals(protocol)) {
