@@ -101,20 +101,24 @@ public class ProxySetting {
                             String[] settings = protocolSetting.split("=:");
                             String protocol = settings[0];
 
-                            if ("http".equals(protocol)) {
+                            if ("http".equals(protocol) || "https".equals(protocol)) {
                                 proxy.put("host", settings[1]);
-                                proxy.put("port", settings[2]);
-                                break;
-                            } else if ("https".equals(protocol)) {
-                                proxy.put("host", settings[1]);
-                                proxy.put("port", settings[2]);
+                                if (settings.length == 3) {
+                                    proxy.put("port", settings[2]);
+                                } else {
+                                    proxy.put("port", "80");
+                                }
                                 break;
                             }
                         }
                     } else {
                         String[] settings = proxyDesc[2].split(":");
                         proxy.put("host", settings[0]);
-                        proxy.put("port", settings[1]);
+                        if (settings.length == 2) {
+                            proxy.put("port", settings[1]);
+                        } else {
+                            proxy.put("port", "80");
+                        }
                     }
                     break;
 
@@ -124,7 +128,7 @@ public class ProxySetting {
                 }
             }
 
-            if (enable) {
+            if (enable && proxy.containsKey("host")) {
                 userProxy.setRegistryResult(proxy);
             }
         });
@@ -164,9 +168,11 @@ public class ProxySetting {
             port.appendChild(document.createTextNode(userProxy.getProxyPort()));
             proxy.appendChild(port);
 
-            Element nonProxyHosts = document.createElement("nonProxyHosts");
-            nonProxyHosts.appendChild(document.createTextNode(userProxy.getNonProxyHosts()));
-            proxy.appendChild(nonProxyHosts);
+            if (userProxy.getNonProxyHosts() != null && !userProxy.getNonProxyHosts().isEmpty()) {
+                Element nonProxyHosts = document.createElement("nonProxyHosts");
+                nonProxyHosts.appendChild(document.createTextNode(userProxy.getNonProxyHosts()));
+                proxy.appendChild(nonProxyHosts);
+            }
 
             proxies.appendChild(proxy);
             XmlUtil.createXml(document, settingsXml);
@@ -182,7 +188,10 @@ public class ProxySetting {
         if ("true".equals(userProxy.getProxyActive())) {
             System.setProperty("proxyHost", userProxy.getProxyHost());
             System.setProperty("proxyPort", userProxy.getProxyPort());
-            System.setProperty("nonProxyHosts", userProxy.getNonProxyHosts());
+
+            if (userProxy.getNonProxyHosts() != null && !userProxy.getNonProxyHosts().isEmpty()) {
+                System.setProperty("nonProxyHosts", userProxy.getNonProxyHosts());
+            }
         }
     }
 }
