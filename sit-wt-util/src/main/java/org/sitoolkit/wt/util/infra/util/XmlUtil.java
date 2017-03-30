@@ -8,32 +8,15 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
 
-import org.sitoolkit.wt.util.infra.proxy.ProxySetting;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class XmlUtil {
-    private static final Logger LOG = Logger.getLogger(ProxySetting.class.getName());
+    private static final Logger LOG = Logger.getLogger(XmlUtil.class.getName());
 
-    public static String readParams(Document document, String expression) {
-
-        String result = "";
-        try {
-            XPath xPath = XPathFactory.newInstance().newXPath();
-            result = xPath.compile(expression).evaluate(document);
-        } catch (Exception exp) {
-            LOG.log(Level.WARNING, "read settings.xml failed", exp);
-            return null;
-        }
-
-        return result.trim();
-    }
-
-    public static void createXml(Document document, File file){
+    public static void writeXml(Document document, File file){
 
         Transformer transformer = null;
         try {
@@ -49,17 +32,17 @@ public class XmlUtil {
         }
     }
 
-    public static Element getChildElement(Element element, String name) {
+    public static Element getChildElement(Element element, String target) {
         NodeList nodes = element.getElementsByTagName("*");
 
-        Element target = null;
+        Element child = null;
         for (int cnt = 0 ; cnt < nodes.getLength() ; cnt++) {
-            if ("proxies".equals(nodes.item(cnt).getNodeName())) {
-                target = (Element) nodes.item(cnt);
+            if (target.equals(nodes.item(cnt).getNodeName())) {
+                child = (Element) nodes.item(cnt);
                 break;
             }
         }
 
-        return target;
+        return child;
     }
 }

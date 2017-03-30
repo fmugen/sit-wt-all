@@ -1,7 +1,8 @@
-package org.sitoolkit.wt.gui.infra.maven;
+package org.sitoolkit.wt.util.infra.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,15 +16,19 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import org.sitoolkit.wt.gui.infra.util.FileIOUtils;
-import org.sitoolkit.wt.gui.infra.util.StrUtils;
-import org.sitoolkit.wt.gui.infra.util.SystemUtils;
+import org.sitoolkit.wt.util.domain.reflectproxy.UserProxy;
 import org.sitoolkit.wt.util.infra.UnExpectedException;
 import org.sitoolkit.wt.util.infra.process.ProcessParams;
+import org.sitoolkit.wt.util.infra.util.FileIOUtils;
+import org.sitoolkit.wt.util.infra.util.StrUtils;
+import org.sitoolkit.wt.util.infra.util.SystemUtils;
+import org.sitoolkit.wt.util.infra.util.XmlUtil;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 public class MavenUtils {
@@ -272,5 +277,100 @@ public class MavenUtils {
 
     public static void main(String[] args) {
         setSitWtVersion(new File("distribution-pom.xml"), "1.1");
+    }
+
+    public static File getUserSettingFile() {
+        File mavenUserHomeDir = new File(System.getProperty("user.home"), ".m2");
+        return new File(mavenUserHomeDir, "settings.xml");
+    }
+
+    public static UserProxy getMavenProxy() {
+        File settingsXml = getUserSettingFile();
+
+        UserProxy userProxy = null;
+
+        try {
+            if (settingsXml.exists()) {
+                Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(settingsXml);
+                XPath xpath = XPathFactory.newInstance().newXPath();
+
+                String proxySetting = xpath.evaluate("/settings/proxies/proxy", document);
+                if (!proxySetting.trim().isEmpty()) {
+                    userProxy = new UserProxy();
+                    String isActive = xpath.evaluate("/settings/proxies/proxy/active", document);
+
+                    if ("true".equals(isActive.trim())) {
+                        LOG.log(Level.INFO, "get maven proxy settings");
+                        String host = xpath.evaluate("/settings/proxies/proxy/host", document);
+                        String port = xpath.evaluate("/settings/proxies/proxy/port", document);
+                        String nonProxyHosts = xpath.evaluate("/settings/proxies/proxy/nonProxyHosts", document);
+                        userProxy.setProxySettings(host, port, nonProxyHosts);
+
+                    } else {
+                        LOG.log(Level.INFO, "maven proxy settings is defined to disable");
+                    }
+                } else {
+                    LOG.log(Level.INFO, "maven proxy settings is undefined");
+                }
+            }
+
+            return userProxy;
+
+        } catch(Exception exp) {
+            throw new UnExpectedException(exp);
+        }
+    }
+
+    public static void writeMavenProxy(UserProxy userProxy) {
+        File settingsXml = getUserSettingFile();
+
+        try {
+            if (!settingsXml.exists()) {
+                LOG.log(Level.INFO, "create user settings.xml");
+                Files.copy(ClassLoader.getSystemResourceAsStream("settings.xml"), settingsXml.toPath());
+            }
+
+            LOG.log(Level.INFO, "add proxy to settings.xml");
+            Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(settingsXml);
+
+            Element root = document.getDocumentElement();
+            Element proxies = XmlUtil.getChildElement(root, "proxies");
+            if (proxies == null) {
+                proxies = document.createElement("proxies");
+                root.appendChild(proxies);
+            }
+
+            Element proxy = document.createElement("proxy");
+            Element id = document.createElement("id");
+            id.appendChild(document.createTextNode("auto-loaded-by-sit-wt"));
+            proxy.appendChild(id);
+
+            Element active = document.createElement("active");
+            active.appendChild(document.createTextNode("true"));
+            proxy.appendChild(active);
+
+            Element protocol = document.createElement("protocol");
+            protocol.appendChild(document.createTextNode("http"));
+            proxy.appendChild(protocol);
+
+            Element host = document.createElement("host");
+            host.appendChild(document.createTextNode(userProxy.getProxyHost()));
+            proxy.appendChild(host);
+
+            Element port = document.createElement("port");
+            port.appendChild(document.createTextNode(userProxy.getProxyPort()));
+            proxy.appendChild(port);
+
+            if (!StrUtils.isEmpty(userProxy.getNonProxyHosts())) {
+                Element nonProxyHosts = document.createElement("nonProxyHosts");
+                nonProxyHosts.appendChild(document.createTextNode(userProxy.getNonProxyHosts()));
+                proxy.appendChild(nonProxyHosts);
+            }
+
+            proxies.appendChild(proxy);
+            XmlUtil.writeXml(document, settingsXml);
+        } catch(Exception exp) {
+            throw new UnExpectedException(exp);
+        }
     }
 }

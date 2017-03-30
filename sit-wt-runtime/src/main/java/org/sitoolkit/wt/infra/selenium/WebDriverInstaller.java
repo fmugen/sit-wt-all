@@ -26,7 +26,7 @@ import org.sitoolkit.wt.infra.ConfigurationException;
 import org.sitoolkit.wt.infra.PropertyUtils;
 import org.sitoolkit.wt.infra.SitRepository;
 import org.sitoolkit.wt.infra.process.ProcessUtils;
-import org.sitoolkit.wt.util.infra.proxy.ProxySetting;
+import org.sitoolkit.wt.util.app.reflectproxy.ReflectProxyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,8 +125,8 @@ public class WebDriverInstaller {
 
         try {
             if (!installFile.exists()) {
-                ProxySetting proxySetting = new ProxySetting();
-                Executors.newSingleThreadExecutor().submit(() -> proxySetting.setProxy()).get();
+                ReflectProxyService proxyService = new ReflectProxyService();
+                Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
 
                 URL downloadUrl = new URL(safariBinaryInfo.downloadUrl);
                 LOG.info("Safari Driverをダウンロードします {} -> {}", downloadUrl,
@@ -188,8 +188,8 @@ public class WebDriverInstaller {
             if (downloadFile.exists()) {
                 LOG.info("{}はダウンロード済みです {}", binaryInfo.sysPropKey, downloadFile.getAbsolutePath());
             } else {
-                ProxySetting proxySetting = new ProxySetting();
-                Executors.newSingleThreadExecutor().submit(() -> proxySetting.setProxy()).get();
+                ReflectProxyService proxyService = new ReflectProxyService();
+                Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
 
                 LOG.info("{}をダウンロードします {} -> {}", new Object[] { binaryInfo.sysPropKey, downloadUrl,
                         downloadFile.getAbsolutePath() });

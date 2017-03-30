@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sitoolkit.wt.domain.evidence.EvidenceDir;
-import org.sitoolkit.wt.util.infra.proxy.ProxySetting;
+import org.sitoolkit.wt.util.app.reflectproxy.ReflectProxyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
@@ -34,8 +34,8 @@ public class EvidenceReportEditor {
         } else {
 
             try {
-                ProxySetting proxySetting = new ProxySetting();
-                Executors.newSingleThreadExecutor().submit(() -> proxySetting.setProxy()).get();
+                ReflectProxyService proxyService = new ReflectProxyService();
+                Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
 
                 FileUtils.copyDirectory(new File(reportResourcePath), evidenceDir.getDir(), false);
 

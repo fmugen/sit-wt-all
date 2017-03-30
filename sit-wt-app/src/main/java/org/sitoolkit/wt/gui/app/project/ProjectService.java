@@ -13,10 +13,10 @@ import org.sitoolkit.wt.gui.domain.project.ProjectState;
 import org.sitoolkit.wt.gui.domain.project.ProjectState.State;
 import org.sitoolkit.wt.gui.infra.config.PropertyManager;
 import org.sitoolkit.wt.gui.infra.log.LogUtils;
-import org.sitoolkit.wt.gui.infra.maven.MavenUtils;
 import org.sitoolkit.wt.gui.infra.util.VersionUtils;
 import org.sitoolkit.wt.util.infra.UnExpectedException;
 import org.sitoolkit.wt.util.infra.concurrent.ExecutorContainer;
+import org.sitoolkit.wt.util.infra.maven.MavenUtils;
 import org.sitoolkit.wt.util.infra.process.ProcessParams;
 
 public class ProjectService {

@@ -27,7 +27,7 @@ import org.sitoolkit.wt.infra.PropertyManager;
 import org.sitoolkit.wt.infra.PropertyUtils;
 import org.sitoolkit.wt.infra.SitPathUtils;
 import org.sitoolkit.wt.infra.TestException;
-import org.sitoolkit.wt.util.infra.proxy.ProxySetting;
+import org.sitoolkit.wt.util.app.reflectproxy.ReflectProxyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -85,8 +85,8 @@ public class EvidenceManager implements ApplicationContextAware {
             throw new TestException("スクリーンショット出力ディレクトリの作成に失敗しました" + imgDir.getAbsoluteFile());
         }
         try {
-            ProxySetting proxySetting = new ProxySetting();
-            Executors.newSingleThreadExecutor().submit(() -> proxySetting.setProxy()).get();
+            ReflectProxyService proxyService = new ReflectProxyService();
+            Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
 
             Properties prop = PropertyUtils.load("/velocity.properties", false);
             Velocity.init(prop);

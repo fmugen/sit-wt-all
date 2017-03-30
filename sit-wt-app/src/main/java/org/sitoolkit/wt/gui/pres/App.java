@@ -7,9 +7,9 @@ import java.util.logging.Logger;
 import org.sitoolkit.wt.gui.infra.config.PropertyManager;
 import org.sitoolkit.wt.gui.infra.fx.FxContext;
 import org.sitoolkit.wt.gui.infra.log.LogUtils;
-import org.sitoolkit.wt.gui.infra.maven.MavenUtils;
+import org.sitoolkit.wt.util.app.reflectproxy.ReflectProxyService;
 import org.sitoolkit.wt.util.infra.concurrent.ExecutorContainer;
-import org.sitoolkit.wt.util.infra.proxy.ProxySetting;
+import org.sitoolkit.wt.util.infra.maven.MavenUtils;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -44,8 +44,8 @@ public class App extends Application {
         FxContext.setPrimaryStage(primaryStage);
         FxContext.setHostServices(getHostServices());
 
-        ProxySetting proxySetting = new ProxySetting();
-        Executors.newSingleThreadExecutor().submit(() -> proxySetting.setProxy()).get();
+        ReflectProxyService proxyService = new ReflectProxyService();
+        Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
 
         Executors.newSingleThreadExecutor().submit(() -> MavenUtils.findAndInstall());
 

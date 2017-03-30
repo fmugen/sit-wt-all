@@ -1,6 +1,8 @@
-package org.sitoolkit.wt.util.infra.proxy;
+package org.sitoolkit.wt.util.domain.reflectproxy;
 
 import java.util.HashMap;
+
+import org.sitoolkit.wt.util.infra.util.StrUtils;
 
 public class UserProxy {
     private String proxyActive = "false";
@@ -56,5 +58,9 @@ public class UserProxy {
 
     public void setNonProxyHosts(String nonProxyHosts) {
         this.nonProxyHosts = nonProxyHosts;
+    }
+
+    public boolean isEnabled() {
+        return ("true".equals(getProxyActive()) && !StrUtils.isEmpty(getProxyHost()));
     }
 }

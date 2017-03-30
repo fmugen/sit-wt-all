@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.sitoolkit.wt.gui.infra.UnInitializedException;
-import org.sitoolkit.wt.gui.infra.util.StrUtils;
+import org.sitoolkit.wt.util.infra.util.StrUtils;
 
 public class SitWtRuntimeUtils {
 

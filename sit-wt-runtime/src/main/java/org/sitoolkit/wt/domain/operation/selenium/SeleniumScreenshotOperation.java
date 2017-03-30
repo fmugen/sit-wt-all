@@ -37,7 +37,7 @@ import org.sitoolkit.wt.domain.operation.ScreenshotOperation;
 import org.sitoolkit.wt.domain.tester.TestContext;
 import org.sitoolkit.wt.infra.ConfigurationException;
 import org.sitoolkit.wt.infra.PropertyManager;
-import org.sitoolkit.wt.util.infra.proxy.ProxySetting;
+import org.sitoolkit.wt.util.app.reflectproxy.ReflectProxyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -89,8 +89,8 @@ public class SeleniumScreenshotOperation implements ScreenshotOperation {
                 return ((TakesScreenshot) seleniumDriver).getScreenshotAs(OutputType.FILE);
             } catch (NoSuchWindowException nswe) {
                 try {
-                    ProxySetting proxySetting = new ProxySetting();
-                    Executors.newSingleThreadExecutor().submit(() -> proxySetting.setProxy()).get();
+                    ReflectProxyService proxyService = new ReflectProxyService();
+                    Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
 
                     File file = File.createTempFile("sit-wt", "screenshot-failure");
                     FileUtils.copyURLToFile(

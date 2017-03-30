@@ -1,4 +1,4 @@
-package org.sitoolkit.wt.gui.infra.util;
+package org.sitoolkit.wt.util.infra.util;
 
 import java.text.NumberFormat;
 

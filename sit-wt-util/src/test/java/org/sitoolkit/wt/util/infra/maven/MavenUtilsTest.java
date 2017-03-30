@@ -1,4 +1,4 @@
-package org.sitoolkit.wt.gui.infra.maven;
+package org.sitoolkit.wt.util.infra.maven;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -6,7 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.io.File;
 
 import org.junit.Test;
-import org.sitoolkit.wt.gui.infra.util.FileIOUtils;
+import org.sitoolkit.wt.util.infra.util.FileIOUtils;
 
 public class MavenUtilsTest {
 
