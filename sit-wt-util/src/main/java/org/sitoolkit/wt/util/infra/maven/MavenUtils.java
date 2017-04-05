@@ -20,9 +20,9 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import org.sitoolkit.wt.util.domain.reflectproxy.UserProxy;
 import org.sitoolkit.wt.util.infra.UnExpectedException;
 import org.sitoolkit.wt.util.infra.process.ProcessParams;
+import org.sitoolkit.wt.util.infra.proxysetting.ProxySetting;
 import org.sitoolkit.wt.util.infra.util.FileIOUtils;
 import org.sitoolkit.wt.util.infra.util.StrUtils;
 import org.sitoolkit.wt.util.infra.util.SystemUtils;
@@ -30,6 +30,7 @@ import org.sitoolkit.wt.util.infra.util.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class MavenUtils {
 
@@ -179,8 +180,7 @@ public class MavenUtils {
 
         try {
 
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document document = builder.parse(settingsXml);
+            Document document = parseSettingFile(settingsXml);
 
             String localRepository = XPathFactory.newInstance().newXPath()
                     .compile("/settings/localRepository").evaluate(document);
@@ -243,8 +243,7 @@ public class MavenUtils {
 
     static int setSitWtVersion(File pomFile, String newVersion, File destPomFile) {
         try {
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document document = builder.parse(pomFile);
+            Document document = parseSettingFile(pomFile);
 
             Node versionNode = (Node) XPathFactory.newInstance().newXPath()
                     .compile("/project/properties/sitwt.version")
@@ -279,49 +278,81 @@ public class MavenUtils {
         setSitWtVersion(new File("distribution-pom.xml"), "1.1");
     }
 
-    public static File getUserSettingFile() {
+    static File getUserSettingFile() {
         File mavenUserHomeDir = new File(System.getProperty("user.home"), ".m2");
         return new File(mavenUserHomeDir, "settings.xml");
     }
 
-    public static UserProxy getMavenProxy() {
-        File settingsXml = getUserSettingFile();
-
-        UserProxy userProxy = null;
-
+    static Document parseSettingFile(File settingFile) throws Exception {
         try {
-            if (settingsXml.exists()) {
-                Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(settingsXml);
-                XPath xpath = XPathFactory.newInstance().newXPath();
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            return builder.parse(settingFile);
 
-                String proxySetting = xpath.evaluate("/settings/proxies/proxy", document);
-                if (!proxySetting.trim().isEmpty()) {
-                    userProxy = new UserProxy();
-                    String isActive = xpath.evaluate("/settings/proxies/proxy/active", document);
-
-                    if ("true".equals(isActive.trim())) {
-                        LOG.log(Level.INFO, "get maven proxy settings");
-                        String host = xpath.evaluate("/settings/proxies/proxy/host", document);
-                        String port = xpath.evaluate("/settings/proxies/proxy/port", document);
-                        String nonProxyHosts = xpath.evaluate("/settings/proxies/proxy/nonProxyHosts", document);
-                        userProxy.setProxySettings(host, port, nonProxyHosts);
-
-                    } else {
-                        LOG.log(Level.INFO, "maven proxy settings is defined to disable");
-                    }
-                } else {
-                    LOG.log(Level.INFO, "maven proxy settings is undefined");
-                }
-            }
-
-            return userProxy;
-
-        } catch(Exception exp) {
-            throw new UnExpectedException(exp);
+        } catch (Exception exp) {
+            throw exp;
         }
     }
 
-    public static void writeMavenProxy(UserProxy userProxy) {
+    public static ProxySetting readProxySetting() {
+        File settingsXml = getUserSettingFile();
+        return readProxySetting(settingsXml);
+    }
+
+    public static ProxySetting readProxySetting(File settingsXml) {
+        if (!settingsXml.exists()) {
+            return null;
+        }
+
+        try {
+            Document document = parseSettingFile(settingsXml);
+            XPath xpath = XPathFactory.newInstance().newXPath();
+
+            ProxySetting proxySetting = new ProxySetting();
+            NodeList proxyList = (NodeList) xpath.evaluate("/settings/proxies/proxy", document, XPathConstants.NODESET);
+            for (int num = 0 ; num < proxyList.getLength() ; num++) {
+                NodeList proxy = proxyList.item(num).getChildNodes();
+
+                String isActive = "";
+                String host = "";
+                String port = "";
+                String nonProxyHosts = "";
+                for (int idx = 0 ; idx < proxy.getLength(); idx++) {
+                    Node proxyItem = proxy.item(idx);
+
+                    switch (proxyItem.getNodeName()) {
+                    case "active" :
+                        isActive = proxyItem.getTextContent();
+                        break;
+                    case "host" :
+                        host = proxyItem.getTextContent();
+                        break;
+                    case "port" :
+                        port = proxyItem.getTextContent();
+                        break;
+                    case "nonProxyHosts" :
+                        nonProxyHosts = proxyItem.getTextContent();
+                        break;
+                    default :
+                        break;
+                    }
+                }
+
+                if ("true".equals(isActive)) {
+                    LOG.log(Level.INFO, "read maven proxy settings");
+                    proxySetting.setProxySettings(host, port, nonProxyHosts);
+                    break;
+                }
+            }
+
+            return proxySetting;
+
+        } catch(Exception exp) {
+            LOG.log(Level.WARNING, "read settings.xml failed", exp);
+            return null;
+        }
+    }
+
+    public static boolean writeProxySetting(ProxySetting proxySetting) {
         File settingsXml = getUserSettingFile();
 
         try {
@@ -331,7 +362,7 @@ public class MavenUtils {
             }
 
             LOG.log(Level.INFO, "add proxy to settings.xml");
-            Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(settingsXml);
+            Document document = parseSettingFile(settingsXml);
 
             Element root = document.getDocumentElement();
             Element proxies = XmlUtil.getChildElement(root, "proxies");
@@ -354,23 +385,27 @@ public class MavenUtils {
             proxy.appendChild(protocol);
 
             Element host = document.createElement("host");
-            host.appendChild(document.createTextNode(userProxy.getProxyHost()));
+            host.appendChild(document.createTextNode(proxySetting.getProxyHost()));
             proxy.appendChild(host);
 
             Element port = document.createElement("port");
-            port.appendChild(document.createTextNode(userProxy.getProxyPort()));
+            port.appendChild(document.createTextNode(proxySetting.getProxyPort()));
             proxy.appendChild(port);
 
-            if (!StrUtils.isEmpty(userProxy.getNonProxyHosts())) {
+            if (!StrUtils.isEmpty(proxySetting.getNonProxyHosts())) {
                 Element nonProxyHosts = document.createElement("nonProxyHosts");
-                nonProxyHosts.appendChild(document.createTextNode(userProxy.getNonProxyHosts()));
+                nonProxyHosts.appendChild(document.createTextNode(proxySetting.getNonProxyHosts()));
                 proxy.appendChild(nonProxyHosts);
             }
 
             proxies.appendChild(proxy);
             XmlUtil.writeXml(document, settingsXml);
+
+            return true;
+
         } catch(Exception exp) {
-            throw new UnExpectedException(exp);
+            LOG.log(Level.WARNING, "write settings.xml failed", exp);
+            return false;
         }
     }
 }

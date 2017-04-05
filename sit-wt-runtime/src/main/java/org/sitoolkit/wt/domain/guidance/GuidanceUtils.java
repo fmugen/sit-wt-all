@@ -7,7 +7,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.sitoolkit.wt.util.app.reflectproxy.ReflectProxyService;
+import org.sitoolkit.wt.util.app.proxysetting.ProxySettingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
@@ -41,7 +41,7 @@ public class GuidanceUtils {
 
         for (String res : resources) {
             try {
-                ReflectProxyService proxyService = new ReflectProxyService();
+                ProxySettingService proxyService = new ProxySettingService();
                 Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
 
                 URL resUrl = ResourceUtils.getURL("classpath:" + res);

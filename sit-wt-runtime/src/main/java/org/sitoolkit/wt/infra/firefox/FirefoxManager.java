@@ -14,7 +14,7 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.sitoolkit.wt.infra.MultiThreadUtils;
 import org.sitoolkit.wt.infra.SitRepository;
 import org.sitoolkit.wt.infra.process.ProcessUtils;
-import org.sitoolkit.wt.util.app.reflectproxy.ReflectProxyService;
+import org.sitoolkit.wt.util.app.proxysetting.ProxySettingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
@@ -59,7 +59,7 @@ public class FirefoxManager {
         } else {
 
             try {
-                ReflectProxyService proxyService = new ReflectProxyService();
+                ProxySettingService proxyService = new ProxySettingService();
                 Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
 
                 // TODO 外部化
@@ -115,7 +115,7 @@ public class FirefoxManager {
             LOG.info("Firefoxはダウンロード済みです {}", ffInstaller.getAbsolutePath());
         } else {
             try {
-                ReflectProxyService proxyService = new ReflectProxyService();
+                ProxySettingService proxyService = new ProxySettingService();
                 Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
 
                 // TODO 外部化
@@ -164,7 +164,7 @@ public class FirefoxManager {
             LOG.info("Firefoxはダウンロード済みです {}", ffInstaller.getAbsolutePath());
         } else {
             try {
-                ReflectProxyService proxyService = new ReflectProxyService();
+                ProxySettingService proxyService = new ProxySettingService();
                 Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
 
                 // TODO 外部化

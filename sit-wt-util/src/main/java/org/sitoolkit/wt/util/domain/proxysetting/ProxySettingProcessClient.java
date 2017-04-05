@@ -1,4 +1,4 @@
-package org.sitoolkit.wt.util.domain.reflectproxy;
+package org.sitoolkit.wt.util.domain.proxysetting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,10 +6,11 @@ import java.util.List;
 import org.sitoolkit.wt.util.infra.process.ConversationProcess;
 import org.sitoolkit.wt.util.infra.process.ConversationProcessContainer;
 import org.sitoolkit.wt.util.infra.process.ProcessParams;
+import org.sitoolkit.wt.util.infra.proxysetting.ProxySetting;
 
-public class ReflectProxyProcessClient {
+public class ProxySettingProcessClient {
 
-    public UserProxy getRegistryProxy(ProcessParams params) {
+    public ProxySetting getRegistryProxy(ProcessParams params) {
         List<String> command = new ArrayList<>();
         command.add("reg");
         command.add("query");
@@ -22,14 +23,14 @@ public class ReflectProxyProcessClient {
         ConversationProcess process = ConversationProcessContainer.create();
         process.start(params);
 
-        UserProxy userProxy = null;
+        ProxySetting proxySetting = null;
         for (Object listener : params.getStdoutListeners()) {
-            if (listener instanceof ReflectProxyStdoutListener) {
-                ReflectProxyStdoutListener casted = (ReflectProxyStdoutListener) listener;
-                userProxy = casted.getUserProxy();
+            if (listener instanceof ProxySettingStdoutListener) {
+                ProxySettingStdoutListener casted = (ProxySettingStdoutListener) listener;
+                proxySetting = casted.getProxySetting();
                 break;
             }
         }
-        return userProxy;
+        return proxySetting;
     }
 }

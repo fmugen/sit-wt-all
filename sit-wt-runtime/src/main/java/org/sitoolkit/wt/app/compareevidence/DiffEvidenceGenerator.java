@@ -18,7 +18,7 @@ import org.sitoolkit.wt.domain.evidence.EvidenceOpener;
 import org.sitoolkit.wt.domain.evidence.ReportOpener;
 import org.sitoolkit.wt.infra.TestException;
 import org.sitoolkit.wt.infra.template.TemplateEngine;
-import org.sitoolkit.wt.util.app.reflectproxy.ReflectProxyService;
+import org.sitoolkit.wt.util.app.proxysetting.ProxySettingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -158,7 +158,7 @@ public class DiffEvidenceGenerator {
         }
 
         try {
-            ReflectProxyService proxyService = new ReflectProxyService();
+            ProxySettingService proxyService = new ProxySettingService();
             Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
 
             URL url = ResourceUtils.getURL("classpath:evidence/" + compareEvidenceResource);

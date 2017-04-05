@@ -1,10 +1,11 @@
-package org.sitoolkit.wt.util.domain.reflectproxy;
+package org.sitoolkit.wt.util.domain.proxysetting;
 
 import org.sitoolkit.wt.util.infra.process.StdoutListener;
+import org.sitoolkit.wt.util.infra.proxysetting.ProxySetting;
 
-public class ReflectProxyStdoutListener implements StdoutListener {
+public class ProxySettingStdoutListener implements StdoutListener {
 
-    private UserProxy userProxy = new UserProxy();
+    private ProxySetting proxySetting = new ProxySetting();
 
     @Override
     public void nextLine(String line) {
@@ -13,8 +14,8 @@ public class ReflectProxyStdoutListener implements StdoutListener {
         }
     }
 
-    public UserProxy getUserProxy() {
-        return userProxy;
+    public ProxySetting getProxySetting() {
+        return proxySetting;
     }
 
     void parse(String line) {
@@ -22,7 +23,7 @@ public class ReflectProxyStdoutListener implements StdoutListener {
         switch(details[0]) {
         case "ProxyEnable" :
             if ("0x1".equals(details[2])) {
-                userProxy.setProxyActive("true");
+                proxySetting.setProxyActive("true");
             }
             break;
 
@@ -33,28 +34,28 @@ public class ReflectProxyStdoutListener implements StdoutListener {
                     String protocol = protocolDetails[0];
 
                     if ("http".equals(protocol) || "https".equals(protocol)) {
-                        userProxy.setProxyHost(protocolDetails[1]);
+                        proxySetting.setProxyHost(protocolDetails[1]);
                         if (protocolDetails.length == 3) {
-                            userProxy.setProxyPort(protocolDetails[2]);
+                            proxySetting.setProxyPort(protocolDetails[2]);
                         } else {
-                            userProxy.setProxyPort("80");
+                            proxySetting.setProxyPort("80");
                         }
                         break;
                     }
                 }
             } else {
                 String[] settings = details[2].split(":");
-                userProxy.setProxyHost(settings[0]);
+                proxySetting.setProxyHost(settings[0]);
                 if (settings.length == 2) {
-                    userProxy.setProxyPort(settings[1]);
+                    proxySetting.setProxyPort(settings[1]);
                 } else {
-                    userProxy.setProxyPort("80");
+                    proxySetting.setProxyPort("80");
                 }
             }
             break;
 
         case "ProxyOverride" :
-            userProxy.setNonProxyHosts(details[2].replaceAll(";", "|"));
+            proxySetting.setNonProxyHosts(details[2].replaceAll(";", "|"));
             break;
         }
     }

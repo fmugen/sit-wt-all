@@ -6,6 +6,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.io.File;
 
 import org.junit.Test;
+import org.sitoolkit.wt.util.infra.proxysetting.ProxySetting;
 import org.sitoolkit.wt.util.infra.util.FileIOUtils;
 
 public class MavenUtilsTest {
@@ -28,6 +29,17 @@ public class MavenUtilsTest {
 
         String[] destPomLines = FileIOUtils.file2str(destPomFile).split(System.lineSeparator());
         assertThat(destPomLines[28].trim(), is("<sitwt.version>0.0.2</sitwt.version>"));
+    }
+
+    @Test
+    public void testReadProxySetting() {
+        File settingsXmlForTest = new File(getClass().getResource("settings-test.xml").getPath());
+
+        ProxySetting proxySetting = MavenUtils.readProxySetting(settingsXmlForTest);
+        assertThat(proxySetting.getProxyActive(), is("true"));
+        assertThat(proxySetting.getProxyHost(), is("127.0.0.2"));
+        assertThat(proxySetting.getProxyPort(), is("8082"));
+        assertThat(proxySetting.getNonProxyHosts(), is("192.168.2.*|localhost"));
     }
 
 }

@@ -1,10 +1,10 @@
-package org.sitoolkit.wt.util.domain.reflectproxy;
+package org.sitoolkit.wt.util.infra.proxysetting;
 
 import java.util.HashMap;
 
 import org.sitoolkit.wt.util.infra.util.StrUtils;
 
-public class UserProxy {
+public class ProxySetting {
     private String proxyActive = "false";
 
     private String proxyHost = "";
