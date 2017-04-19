@@ -90,7 +90,8 @@ public class SeleniumScreenshotOperation implements ScreenshotOperation {
             } catch (NoSuchWindowException nswe) {
                 try {
                     ProxySettingService proxyService = new ProxySettingService();
-                    Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
+                    Executors.newSingleThreadExecutor().submit(() -> proxyService.loadProxy())
+                            .get();
 
                     File file = File.createTempFile("sit-wt", "screenshot-failure");
                     FileUtils.copyURLToFile(

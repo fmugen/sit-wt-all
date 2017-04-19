@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -27,7 +26,6 @@ import org.sitoolkit.wt.infra.PropertyManager;
 import org.sitoolkit.wt.infra.PropertyUtils;
 import org.sitoolkit.wt.infra.SitPathUtils;
 import org.sitoolkit.wt.infra.TestException;
-import org.sitoolkit.wt.util.app.proxysetting.ProxySettingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -85,9 +83,6 @@ public class EvidenceManager implements ApplicationContextAware {
             throw new TestException("スクリーンショット出力ディレクトリの作成に失敗しました" + imgDir.getAbsoluteFile());
         }
         try {
-            ProxySettingService proxyService = new ProxySettingService();
-            Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
-
             Properties prop = PropertyUtils.load("/velocity.properties", false);
             Velocity.init(prop);
             tmpl = Velocity.getTemplate(templatePath);

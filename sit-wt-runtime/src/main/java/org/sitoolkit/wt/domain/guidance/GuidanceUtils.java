@@ -3,11 +3,9 @@ package org.sitoolkit.wt.domain.guidance;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.sitoolkit.wt.util.app.proxysetting.ProxySettingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
@@ -41,9 +39,6 @@ public class GuidanceUtils {
 
         for (String res : resources) {
             try {
-                ProxySettingService proxyService = new ProxySettingService();
-                Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
-
                 URL resUrl = ResourceUtils.getURL("classpath:" + res);
                 File destFile = new File(destDir, res);
                 if (destFile.exists()) {

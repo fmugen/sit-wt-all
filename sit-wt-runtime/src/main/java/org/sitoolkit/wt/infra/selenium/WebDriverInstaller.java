@@ -126,7 +126,7 @@ public class WebDriverInstaller {
         try {
             if (!installFile.exists()) {
                 ProxySettingService proxyService = new ProxySettingService();
-                Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
+                Executors.newSingleThreadExecutor().submit(() -> proxyService.loadProxy()).get();
 
                 URL downloadUrl = new URL(safariBinaryInfo.downloadUrl);
                 LOG.info("Safari Driverをダウンロードします {} -> {}", downloadUrl,

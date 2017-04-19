@@ -60,7 +60,7 @@ public class FirefoxManager {
 
             try {
                 ProxySettingService proxyService = new ProxySettingService();
-                Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
+                Executors.newSingleThreadExecutor().submit(() -> proxyService.loadProxy()).get();
 
                 // TODO 外部化
                 URL xpiUrl = new URL(
@@ -116,7 +116,7 @@ public class FirefoxManager {
         } else {
             try {
                 ProxySettingService proxyService = new ProxySettingService();
-                Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
+                Executors.newSingleThreadExecutor().submit(() -> proxyService.loadProxy()).get();
 
                 // TODO 外部化
                 URL url = new URL(
@@ -165,7 +165,7 @@ public class FirefoxManager {
         } else {
             try {
                 ProxySettingService proxyService = new ProxySettingService();
-                Executors.newSingleThreadExecutor().submit(() -> proxyService.setProxy()).get();
+                Executors.newSingleThreadExecutor().submit(() -> proxyService.loadProxy()).get();
 
                 // TODO 外部化
                 URL url = new URL(

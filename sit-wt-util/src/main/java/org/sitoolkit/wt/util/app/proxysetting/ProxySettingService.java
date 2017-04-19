@@ -12,7 +12,7 @@ import org.sitoolkit.wt.util.infra.proxysetting.ProxySetting;
 public class ProxySettingService {
     private static final Logger LOG = Logger.getLogger(ProxySettingService.class.getName());
 
-    public void setProxy() {
+    public void loadProxy() {
 
         try {
             ProxySetting proxySetting = MavenUtils.readProxySetting();
