@@ -8,7 +8,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -126,7 +125,7 @@ public class WebDriverInstaller {
         try {
             if (!installFile.exists()) {
                 ProxySettingService proxyService = new ProxySettingService();
-                Executors.newSingleThreadExecutor().submit(() -> proxyService.loadProxy()).get();
+                proxyService.loadProxy();
 
                 URL downloadUrl = new URL(safariBinaryInfo.downloadUrl);
                 LOG.info("Safari Driverをダウンロードします {} -> {}", downloadUrl,
@@ -189,7 +188,7 @@ public class WebDriverInstaller {
                 LOG.info("{}はダウンロード済みです {}", binaryInfo.sysPropKey, downloadFile.getAbsolutePath());
             } else {
                 ProxySettingService proxyService = new ProxySettingService();
-                Executors.newSingleThreadExecutor().submit(() -> proxyService.loadProxy()).get();
+                proxyService.loadProxy();
 
                 LOG.info("{}をダウンロードします {} -> {}", new Object[] { binaryInfo.sysPropKey, downloadUrl,
                         downloadFile.getAbsolutePath() });

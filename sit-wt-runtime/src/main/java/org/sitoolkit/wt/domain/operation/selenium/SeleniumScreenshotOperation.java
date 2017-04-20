@@ -21,7 +21,6 @@ import java.awt.Robot;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.Executors;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
@@ -37,7 +36,6 @@ import org.sitoolkit.wt.domain.operation.ScreenshotOperation;
 import org.sitoolkit.wt.domain.tester.TestContext;
 import org.sitoolkit.wt.infra.ConfigurationException;
 import org.sitoolkit.wt.infra.PropertyManager;
-import org.sitoolkit.wt.util.app.proxysetting.ProxySettingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -89,10 +87,6 @@ public class SeleniumScreenshotOperation implements ScreenshotOperation {
                 return ((TakesScreenshot) seleniumDriver).getScreenshotAs(OutputType.FILE);
             } catch (NoSuchWindowException nswe) {
                 try {
-                    ProxySettingService proxyService = new ProxySettingService();
-                    Executors.newSingleThreadExecutor().submit(() -> proxyService.loadProxy())
-                            .get();
-
                     File file = File.createTempFile("sit-wt", "screenshot-failure");
                     FileUtils.copyURLToFile(
                             ResourceUtils.getURL("classpath:screenshot-failure.png"), file);

@@ -3,7 +3,6 @@ package org.sitoolkit.wt.infra.firefox;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.concurrent.Executors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -60,7 +59,7 @@ public class FirefoxManager {
 
             try {
                 ProxySettingService proxyService = new ProxySettingService();
-                Executors.newSingleThreadExecutor().submit(() -> proxyService.loadProxy()).get();
+                proxyService.loadProxy();
 
                 // TODO 外部化
                 URL xpiUrl = new URL(
@@ -116,7 +115,7 @@ public class FirefoxManager {
         } else {
             try {
                 ProxySettingService proxyService = new ProxySettingService();
-                Executors.newSingleThreadExecutor().submit(() -> proxyService.loadProxy()).get();
+                proxyService.loadProxy();
 
                 // TODO 外部化
                 URL url = new URL(
@@ -165,7 +164,7 @@ public class FirefoxManager {
         } else {
             try {
                 ProxySettingService proxyService = new ProxySettingService();
-                Executors.newSingleThreadExecutor().submit(() -> proxyService.loadProxy()).get();
+                proxyService.loadProxy();
 
                 // TODO 外部化
                 URL url = new URL(
