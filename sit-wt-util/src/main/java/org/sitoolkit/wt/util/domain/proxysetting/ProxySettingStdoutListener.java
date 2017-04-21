@@ -7,10 +7,22 @@ public class ProxySettingStdoutListener implements StdoutListener {
 
     private ProxySetting proxySetting = new ProxySetting();
 
+    private boolean done = false;
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
     @Override
     public void nextLine(String line) {
         if (line.trim().startsWith("Proxy")) {
             parse(line.trim());
+        } else if (line.trim().startsWith("検索の完了:")) {
+            setDone(true);
         }
     }
 

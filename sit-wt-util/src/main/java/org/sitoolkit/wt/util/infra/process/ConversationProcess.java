@@ -54,20 +54,12 @@ public class ConversationProcess {
             stdoutListeners.add(LOG_STDOUT_LISTENER);
             stdoutListeners.addAll(params.getStdoutListeners());
             stdoutListeners.addAll(StdoutListenerContainer.get().getListeners());
-            if (params.getProcessWait()) {
-                ExecutorContainer.get().submit(() -> scan(process.getInputStream(), stdoutListeners)).get();
-            } else {
-                ExecutorContainer.get().execute(() -> scan(process.getInputStream(), stdoutListeners));
-            }
+            ExecutorContainer.get().execute(() -> scan(process.getInputStream(), stdoutListeners));
 
             List<StdoutListener> stderrListeners = new ArrayList<>();
             stderrListeners.add(LOG_STDERR_LISTENER);
 
-            if (params.getProcessWait()) {
-                ExecutorContainer.get().submit(() -> scan(process.getErrorStream(), stderrListeners)).get();
-            } else {
-                ExecutorContainer.get().execute(() -> scan(process.getErrorStream(), stderrListeners));
-            }
+            ExecutorContainer.get().execute(() -> scan(process.getErrorStream(), stderrListeners));
 
             processWriter = new PrintWriter(process.getOutputStream());
 
