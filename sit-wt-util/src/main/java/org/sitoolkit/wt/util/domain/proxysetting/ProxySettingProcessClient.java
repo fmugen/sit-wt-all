@@ -18,10 +18,9 @@ public class ProxySettingProcessClient {
         command.add("/v");
         command.add("Proxy*");
         params.setCommand(command);
-        params.setProcessWait(true);
 
         ConversationProcess process = ConversationProcessContainer.create();
-        process.start(params);
+        process.startWithProcessWait(params);
 
         ProxySetting proxySetting = null;
         for (Object listener : params.getStdoutListeners()) {

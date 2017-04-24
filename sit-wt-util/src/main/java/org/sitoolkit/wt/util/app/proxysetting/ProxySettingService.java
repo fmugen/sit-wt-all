@@ -40,21 +40,6 @@ public class ProxySettingService {
 
         ProxySettingStdoutListener proxyStdoutListener = new ProxySettingStdoutListener();
         params.getStdoutListeners().add(proxyStdoutListener);
-        params.getExitClallbacks().add(exitCode -> {
-            int timeout = 3000;
-            int counter = 0;
-            while (!proxyStdoutListener.isDone()) {
-                int wait = 100;
-                try {
-                    Thread.sleep(wait);
-                    counter += wait;
-                    if (counter > timeout) throw new Exception("STDOUT read timeout.");
-                } catch (Exception exp) {
-                    LOG.log(Level.WARNING, "get OS proxy failed : ", exp);
-                    break;
-                }
-            }
-        });
 
         return client.getRegistryProxy(params);
     }

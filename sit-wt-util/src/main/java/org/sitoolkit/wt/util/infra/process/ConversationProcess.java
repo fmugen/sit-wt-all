@@ -64,11 +64,48 @@ public class ConversationProcess {
             processWriter = new PrintWriter(process.getOutputStream());
 
             if (!params.getExitClallbacks().isEmpty()) {
-                if (params.getProcessWait()) {
-                    ExecutorContainer.get().submit(() -> wait(params.getExitClallbacks())).get();
-                } else {
-                    ExecutorContainer.get().execute(() -> wait(params.getExitClallbacks()));
-                }
+                ExecutorContainer.get().execute(() -> wait(params.getExitClallbacks()));
+            }
+
+        } catch (Exception e) {
+            throw new UnExpectedException(e);
+        }
+    }
+
+    public void startWithProcessWait(ProcessParams params) {
+
+        File directory = params.getDirectory();
+        if (directory == null) {
+            directory = ProcessParams.getDefaultCurrentDir();
+        }
+        List<String> command = params.getCommand();
+
+        if (process != null && process.isAlive()) {
+            LOG.log(Level.WARNING, "process {0} is alive.", process);
+        }
+
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.environment().putAll(params.getEnviroment());
+
+        try {
+            pb.directory(directory);
+            process = pb.start();
+            LOG.log(Level.INFO, "process {0} starts {1}", new Object[] { process, command });
+
+            List<StdoutListener> stdoutListeners = new ArrayList<>();
+            stdoutListeners.add(LOG_STDOUT_LISTENER);
+            stdoutListeners.addAll(params.getStdoutListeners());
+            stdoutListeners.addAll(StdoutListenerContainer.get().getListeners());
+            scan(process.getInputStream(), stdoutListeners);
+
+            List<StdoutListener> stderrListeners = new ArrayList<>();
+            stderrListeners.add(LOG_STDERR_LISTENER);
+            scan(process.getErrorStream(), stderrListeners);
+
+            processWriter = new PrintWriter(process.getOutputStream());
+
+            if (!params.getExitClallbacks().isEmpty()) {
+                wait(params.getExitClallbacks());
             }
 
         } catch (Exception e) {
