@@ -10,7 +10,9 @@ import org.sitoolkit.wt.util.infra.proxysetting.ProxySetting;
 
 public class ProxySettingProcessClient {
 
-    public ProxySetting getRegistryProxy(ProcessParams params) {
+    public ProxySetting getRegistryProxy() {
+        ProcessParams params = new ProcessParams();
+
         List<String> command = new ArrayList<>();
         command.add("reg");
         command.add("query");
@@ -19,17 +21,12 @@ public class ProxySettingProcessClient {
         command.add("Proxy*");
         params.setCommand(command);
 
+        ProxySettingStdoutListener proxyStdoutListener = new ProxySettingStdoutListener();
+        params.getStdoutListeners().add(proxyStdoutListener);
+
         ConversationProcess process = ConversationProcessContainer.create();
         process.startWithProcessWait(params);
 
-        ProxySetting proxySetting = null;
-        for (Object listener : params.getStdoutListeners()) {
-            if (listener instanceof ProxySettingStdoutListener) {
-                ProxySettingStdoutListener casted = (ProxySettingStdoutListener) listener;
-                proxySetting = casted.getProxySetting();
-                break;
-            }
-        }
-        return proxySetting;
+        return proxyStdoutListener.getProxySetting();
     }
 }

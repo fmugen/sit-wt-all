@@ -4,9 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.sitoolkit.wt.util.domain.proxysetting.ProxySettingProcessClient;
-import org.sitoolkit.wt.util.domain.proxysetting.ProxySettingStdoutListener;
 import org.sitoolkit.wt.util.infra.maven.MavenUtils;
-import org.sitoolkit.wt.util.infra.process.ProcessParams;
 import org.sitoolkit.wt.util.infra.proxysetting.ProxySetting;
 
 public class ProxySettingService {
@@ -19,7 +17,8 @@ public class ProxySettingService {
 
             if (proxySetting == null) {
                 LOG.log(Level.INFO, "read registry proxy settings");
-                proxySetting = getOsProxy();
+                ProxySettingProcessClient client = new ProxySettingProcessClient();
+                proxySetting = client.getRegistryProxy();
 
                 if (proxySetting.isEnabled()) {
                     if (!MavenUtils.writeProxySetting(proxySetting))
@@ -32,18 +31,6 @@ public class ProxySettingService {
             LOG.log(Level.WARNING, "set proxy failed", exp);
         }
     }
-
-    private ProxySetting getOsProxy() {
-        ProxySettingProcessClient client = new ProxySettingProcessClient();
-
-        ProcessParams params = new ProcessParams();
-
-        ProxySettingStdoutListener proxyStdoutListener = new ProxySettingStdoutListener();
-        params.getStdoutListeners().add(proxyStdoutListener);
-
-        return client.getRegistryProxy(params);
-    }
-
 
     private void setProperties(ProxySetting proxySetting) {
         System.setProperty("proxySet", proxySetting.getProxyActive());
