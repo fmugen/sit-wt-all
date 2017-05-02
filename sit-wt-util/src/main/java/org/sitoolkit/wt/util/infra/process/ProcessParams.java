@@ -20,6 +20,8 @@ public class ProcessParams {
 
     private List<ProcessExitCallback> exitClallbacks = new ArrayList<>();
 
+    private boolean processWait = false;
+
     public ProcessParams() {
     }
 
@@ -69,6 +71,14 @@ public class ProcessParams {
 
     public void setExitClallbacks(List<ProcessExitCallback> exitClallbacks) {
         this.exitClallbacks = exitClallbacks;
+    }
+
+    public boolean isProcessWait() {
+        return processWait;
+    }
+
+    public void setProcessWait(boolean processWait) {
+        this.processWait = processWait;
     }
 
 }

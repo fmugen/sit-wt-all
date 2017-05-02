@@ -30,15 +30,15 @@ public class ConversationProcess {
     ConversationProcess() {
     }
 
-    public void start(ProcessParams params) {
-        start(params, false);
-    }
-
     public void startWithProcessWait(ProcessParams params) {
-        start(params, true);
+        if (params.getExitClallbacks().isEmpty()) {
+            params.getExitClallbacks().add(new NopProcessExitCallback());
+        }
+        params.setProcessWait(true);
+        start(params);
     }
 
-    public void start(ProcessParams params, boolean processWait) {
+    public void start(ProcessParams params) {
 
         File directory = params.getDirectory();
         if (directory == null) {
@@ -66,7 +66,7 @@ public class ConversationProcess {
             List<StdoutListener> stderrListeners = new ArrayList<>();
             stderrListeners.add(LOG_STDERR_LISTENER);
 
-            if (processWait) {
+            if (params.isProcessWait()) {
                 scan(process.getInputStream(), stdoutListeners);
                 scan(process.getErrorStream(), stderrListeners);
             } else {
@@ -77,7 +77,7 @@ public class ConversationProcess {
             processWriter = new PrintWriter(process.getOutputStream());
 
             if (!params.getExitClallbacks().isEmpty()) {
-                if (processWait) {
+                if (params.isProcessWait()) {
                     wait(params.getExitClallbacks());
                 } else {
                     ExecutorContainer.get().execute(() -> wait(params.getExitClallbacks()));
