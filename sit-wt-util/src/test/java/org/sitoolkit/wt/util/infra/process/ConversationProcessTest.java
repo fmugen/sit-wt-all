@@ -12,16 +12,14 @@ import org.junit.Test;
 public class ConversationProcessTest {
 
     @Test
-    public void startTestAddCallback() {
+    public void testStartAddCallBack() {
         ProcessParams params = new ProcessParams();
         params.setCommand(testCommand());
 
         TestStdoutListener testListener = new TestStdoutListener();
         params.getStdoutListeners().add(testListener);
 
-        params.getExitClallbacks().add(exitCode -> {
-            // NOP
-        });
+        params.getExitClallbacks().add(new NopProcessExitCallback());
 
         ConversationProcess process = ConversationProcessContainer.create();
         process.start(params);
@@ -30,7 +28,7 @@ public class ConversationProcessTest {
     }
 
     @Test
-    public void startTestWithoutCallback() {
+    public void testStartWithoutCallBack() {
         ProcessParams params = new ProcessParams();
         params.setCommand(testCommand());
 
@@ -44,16 +42,14 @@ public class ConversationProcessTest {
     }
 
     @Test
-    public void startWithProcessWaitTestAddCallback() {
+    public void testStartWithProcessWaitAddCallback() {
         ProcessParams params = new ProcessParams();
         params.setCommand(testCommand());
 
         TestStdoutListener testListener = new TestStdoutListener();
         params.getStdoutListeners().add(testListener);
 
-        params.getExitClallbacks().add(exitCode -> {
-            // NOP
-        });
+        params.getExitClallbacks().add(new NopProcessExitCallback());
 
         ConversationProcess process = ConversationProcessContainer.create();
         process.startWithProcessWait(params);
@@ -62,7 +58,7 @@ public class ConversationProcessTest {
     }
 
     @Test
-    public void startWithProcessWaitTestWithoutCallback() {
+    public void testStartWithProcessWaitWithoutCallback() {
         ProcessParams params = new ProcessParams();
         params.setCommand(testCommand());
 
