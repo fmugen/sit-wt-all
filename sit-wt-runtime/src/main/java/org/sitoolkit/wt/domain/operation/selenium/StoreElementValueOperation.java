@@ -17,9 +17,6 @@ package org.sitoolkit.wt.domain.operation.selenium;
 
 import javax.annotation.Resource;
 
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.Point;
-import org.openqa.selenium.Rectangle;
 import org.openqa.selenium.WebElement;
 import org.sitoolkit.wt.domain.tester.TestContext;
 import org.sitoolkit.wt.domain.testscript.TestStep;
@@ -39,54 +36,41 @@ public class StoreElementValueOperation extends SeleniumOperation {
     @Override
     public void execute(TestStep testStep, SeleniumOperationContext ctx) {
 
-        String strValue = null;
-        Point locValue = null;
-        Rectangle rectValue = null;
-        Dimension dimValue = null;
-
+        Object value = null;
         String name = testStep.getValue();
-        String getType[] = testStep.getDataType().split(":");
+        String[] type = testStep.getDataType().split(":");
         WebElement element = findElement(testStep.getLocator());
 
-        switch (getType[0]) {
+        switch (type[0]) {
 
             case "text":
-                strValue = element.getText();
+                value = element.getText();
                 break;
             case "tag":
-                strValue = element.getTagName();
+                value = element.getTagName();
                 break;
             case "attribute":
-                if (1 < getType.length)
-                    strValue = element.getAttribute(getType[1]);
+                if (1 < type.length)
+                    value = element.getAttribute(type[1]);
                 break;
             case "css":
-                if (1 < getType.length)
-                    strValue = element.getCssValue(getType[1]);
+                if (1 < type.length)
+                    value = element.getCssValue(type[1]);
                 break;
             case "location":
-                locValue = element.getLocation();
+                value = element.getLocation();
                 break;
             case "rect":
-                rectValue = element.getRect();
+                value = element.getRect();
                 break;
             case "size":
-                dimValue = element.getSize();
+                value = element.getSize();
                 break;
         }
 
-        if (strValue != null) {
-            log.info("変数を定義します {}={}", name, strValue);
-            context.addParam(name, strValue);
-        } else if (locValue != null) {
-            log.info("変数を定義します {}={}", name, locValue);
-            context.addParam(name, locValue);
-        } else if (rectValue != null) {
-            log.info("変数を定義します {}={}", name, rectValue);
-            context.addParam(name, rectValue);
-        } else if (dimValue != null) {
-            log.info("変数を定義します {}={}", name, dimValue);
-            context.addParam(name, dimValue);
+        if (value != null) {
+            log.info("変数を定義します {}={}", name, value);
+            context.addParam(name, value);
         }
     }
 }
