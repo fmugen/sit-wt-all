@@ -62,6 +62,7 @@ public class EvidenceManager implements ApplicationContextAware {
     private String logFilePath = "target/sit-wt.log";
     private Template tmpl;
     private ApplicationContext appCtx;
+    private File downladDir;
 
     @Resource
     PropertyManager pm;
@@ -238,6 +239,21 @@ public class EvidenceManager implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext arg0) throws BeansException {
         appCtx = arg0;
+    }
+
+    public void storeDownladEvidence(File dlFile) {
+        downladDir = new File(evidenceDir, "download");
+        downladDir.mkdirs();
+        if (!downladDir.exists()) {
+            throw new TestException("ダウンロードファイル出力ディレクトリの作成に失敗しました" + downladDir.getAbsoluteFile());
+        }
+
+        File dlEvidence = new File(downladDir, dlFile.getName());
+        dlFile.renameTo(dlEvidence);
+    }
+
+    public File getDownloadDir() {
+        return downladDir;
     }
 
 }
