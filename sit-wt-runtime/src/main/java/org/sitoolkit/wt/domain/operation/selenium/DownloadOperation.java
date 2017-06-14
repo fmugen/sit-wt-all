@@ -24,10 +24,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.sitoolkit.wt.domain.evidence.EvidenceManager;
 import org.sitoolkit.wt.domain.evidence.MessagePattern;
+import org.sitoolkit.wt.domain.tester.TestContext;
 import org.sitoolkit.wt.domain.testscript.TestStep;
 import org.sitoolkit.wt.infra.SitRepository;
 import org.sitoolkit.wt.infra.TestException;
-import org.sitoolkit.wt.util.app.proxysetting.ProxySettingService;
+import org.slf4j.helpers.MessageFormatter;
 import org.springframework.stereotype.Component;
 
 /**
@@ -36,6 +37,9 @@ import org.springframework.stereotype.Component;
  */
 @Component("downloadOperation")
 public class DownloadOperation extends SeleniumOperation {
+
+    @Resource
+    TestContext current;
 
     @Resource
     EvidenceManager em;
@@ -53,19 +57,21 @@ public class DownloadOperation extends SeleniumOperation {
                 tmpDir.mkdirs();
             }
 
-            String fileName = "No" + testStep.getNo() + "_"
-                    + StringUtils.substringAfterLast(targetUrl.toString(), "/");
+            String fileName = em.downloadFileName(current.getScriptName(), current.getCaseNo(),
+                    current.getTestStepNo(), current.getItemName(),
+                    StringUtils.substringAfterLast(targetUrl.toString(), "/"));
             File tempFile = new File(tmpDir, fileName);
-
-            ProxySettingService proxyService = new ProxySettingService();
-            proxyService.loadProxy();
             FileUtils.copyURLToFile(targetUrl, tempFile);
 
             em.storeDownladEvidence(tempFile);
+            File evidenceFile = new File(em.getDownloadDir(), fileName);
 
-            String evidencePath = em.getDownloadDir().getAbsolutePath() + "/" + fileName;
-            String linkAddedMsg = "<a href=\"" + evidencePath + "\" target=\"evidence\">"
-                    + testStep.getItemName() + "</a>をダウンロードしました";
+            Object[] params = new Object[] { "<a href=\"" + evidenceFile.getAbsolutePath()
+                    + "\" target=\"evidence\">" + testStep.getItemName() + "</a>",
+                    testStep.getLocator(), "ダウンロード" };
+            String linkAddedMsg = MessageFormatter
+                    .arrayFormat(MessagePattern.項目をXXしました.getPattern(), params).getMessage();
+
             ctx.getRecords().get(ctx.getRecords().size() - 1).setLog(linkAddedMsg);
 
         } catch (Exception exp) {

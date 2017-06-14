@@ -26,6 +26,7 @@ import java.io.IOException;
 import javax.annotation.Resource;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.sitoolkit.wt.domain.evidence.EvidenceManager;
 import org.sitoolkit.wt.domain.tester.SitTesterTestBase;
@@ -46,9 +47,14 @@ public class DownloadOperationTest extends SitTesterTestBase {
         File targetFile = new File("src/main/webapp/pdf/DownloadTest.pdf");
         String targetHash = DigestUtils.md5Hex(new FileInputStream(targetFile));
 
-        File evidenceDir = em.getDownloadDir();
-        File firstEvidence = new File(evidenceDir, "No2_DownloadTest.pdf");
-        File secondEvidence = new File(evidenceDir, "No5_DownloadTest.pdf");
+        String evidenceDir = em.getDownloadDir().getAbsolutePath();
+        String testScriptName = StringUtils.substringAfterLast(getTestScriptPath(), "/");
+        String caseNo = "001";
+        String baseFileName = targetFile.getName();
+        File firstEvidence = new File(evidenceDir,
+                em.downloadFileName(testScriptName, caseNo, "2", "参考資料", baseFileName));
+        File secondEvidence = new File(evidenceDir,
+                em.downloadFileName(testScriptName, caseNo, "5", "参考資料表示", baseFileName));
 
         assertThat(DigestUtils.md5Hex(new FileInputStream(firstEvidence)), is(targetHash));
         assertThat(DigestUtils.md5Hex(new FileInputStream(secondEvidence)), is(targetHash));
