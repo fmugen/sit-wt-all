@@ -125,8 +125,8 @@ public class WebDriverInstaller {
         try {
             if (!installFile.exists()) {
                 if (!"true".equals(System.getProperty("sitwt.proxy.loaded"))) {
-                ProxySettingService proxyService = new ProxySettingService();
-                proxyService.loadProxy();
+                    ProxySettingService proxyService = new ProxySettingService();
+                    proxyService.loadProxy();
                 }
 
                 URL downloadUrl = new URL(safariBinaryInfo.downloadUrl);
