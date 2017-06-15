@@ -26,8 +26,8 @@ import org.sitoolkit.wt.domain.evidence.EvidenceManager;
 import org.sitoolkit.wt.domain.evidence.MessagePattern;
 import org.sitoolkit.wt.domain.tester.TestContext;
 import org.sitoolkit.wt.domain.testscript.TestStep;
-import org.sitoolkit.wt.infra.SitRepository;
 import org.sitoolkit.wt.infra.TestException;
+import org.sitoolkit.wt.util.app.proxysetting.ProxySettingService;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.stereotype.Component;
 
@@ -52,21 +52,18 @@ public class DownloadOperation extends SeleniumOperation {
             URL targetUrl = (testStep.getLocator().isNa()) ? new URL(seleniumDriver.getCurrentUrl())
                     : new URL(findElement(testStep.getLocator()).getAttribute("href"));
 
-            File tmpDir = new File(SitRepository.getRepositoryPath(), "temporary");
-            if (!tmpDir.exists()) {
-                tmpDir.mkdirs();
-            }
-
             String fileName = em.downloadFileName(current.getScriptName(), current.getCaseNo(),
                     current.getTestStepNo(), current.getItemName(),
                     StringUtils.substringAfterLast(targetUrl.toString(), "/"));
-            File tempFile = new File(tmpDir, fileName);
-            FileUtils.copyURLToFile(targetUrl, tempFile);
+            File downloadFile = new File(em.getDownloadDir(), fileName);
 
-            em.storeDownladEvidence(tempFile);
-            File evidenceFile = new File(em.getDownloadDir(), fileName);
+            if (!"true".equals(System.getProperty("sitwt.proxy.loaded"))) {
+                ProxySettingService proxyService = new ProxySettingService();
+                proxyService.loadProxy();
+            }
+            FileUtils.copyURLToFile(targetUrl, downloadFile);
 
-            Object[] params = new Object[] { "<a href=\"" + evidenceFile.getAbsolutePath()
+            Object[] params = new Object[] { "<a href=\"" + downloadFile.getAbsolutePath()
                     + "\" target=\"evidence\">" + testStep.getItemName() + "</a>",
                     testStep.getLocator(), "ダウンロード" };
             String linkAddedMsg = MessageFormatter

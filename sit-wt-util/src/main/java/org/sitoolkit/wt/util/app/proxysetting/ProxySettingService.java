@@ -29,6 +29,8 @@ public class ProxySettingService {
             setProperties(proxySetting);
         } catch (Exception exp) {
             LOG.log(Level.WARNING, "set proxy failed", exp);
+        } finally {
+            System.setProperty("sitwt.proxy.loaded", "true");
         }
     }
 

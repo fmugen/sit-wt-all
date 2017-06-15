@@ -241,17 +241,6 @@ public class EvidenceManager implements ApplicationContextAware {
         appCtx = arg0;
     }
 
-    public void storeDownladEvidence(File downloadFile) {
-        downloadDir = new File(evidenceDir, "download");
-        downloadDir.mkdirs();
-        if (!downloadDir.exists()) {
-            throw new TestException("ダウンロードファイル出力ディレクトリの作成に失敗しました" + downloadDir.getAbsoluteFile());
-        }
-
-        File downloadEvidence = new File(downloadDir, downloadFile.getName());
-        downloadFile.renameTo(downloadEvidence);
-    }
-
     public String downloadFileName(String scriptName, String caseNo, String testStepNo,
             String itemName, String baseFilename) {
         return StringUtils
@@ -259,6 +248,8 @@ public class EvidenceManager implements ApplicationContextAware {
     }
 
     public File getDownloadDir() {
+        downloadDir = new File(evidenceDir, "download");
+        downloadDir.mkdirs();
         return downloadDir;
     }
 
