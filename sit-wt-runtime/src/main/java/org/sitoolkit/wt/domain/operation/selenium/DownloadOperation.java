@@ -28,7 +28,6 @@ import org.sitoolkit.wt.domain.tester.TestContext;
 import org.sitoolkit.wt.domain.testscript.TestStep;
 import org.sitoolkit.wt.infra.TestException;
 import org.sitoolkit.wt.util.app.proxysetting.ProxySettingService;
-import org.slf4j.helpers.MessageFormatter;
 import org.springframework.stereotype.Component;
 
 /**
@@ -46,7 +45,6 @@ public class DownloadOperation extends SeleniumOperation {
 
     @Override
     public void execute(TestStep testStep, SeleniumOperationContext ctx) {
-        ctx.info(MessagePattern.項目をXXします, "ダウンロード");
 
         try {
             URL targetUrl = (testStep.getLocator().isNa()) ? new URL(seleniumDriver.getCurrentUrl())
@@ -63,13 +61,7 @@ public class DownloadOperation extends SeleniumOperation {
             }
             FileUtils.copyURLToFile(targetUrl, downloadFile);
 
-            Object[] params = new Object[] { "<a href=\"" + downloadFile.getAbsolutePath()
-                    + "\" target=\"evidence\">" + testStep.getItemName() + "</a>",
-                    testStep.getLocator(), "ダウンロード" };
-            String linkAddedMsg = MessageFormatter
-                    .arrayFormat(MessagePattern.項目をXXします.getPattern(), params).getMessage();
-
-            ctx.getRecords().get(ctx.getRecords().size() - 1).setLog(linkAddedMsg);
+            ctx.downloadInfo(MessagePattern.項目をXXします, downloadFile, targetUrl, "ダウンロード");
 
         } catch (Exception exp) {
             throw new TestException(exp);

@@ -1,5 +1,7 @@
 package org.sitoolkit.wt.domain.operation.selenium;
 
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +39,11 @@ public class SeleniumOperationContext {
 
     public void info(MessagePattern pattern, Object... params) {
         info(null, pattern, params);
+    }
+
+    public void downloadInfo(MessagePattern pattern, File linkItem, URL url, Object... params) {
+        records.add(LogRecord.createLinkRecord(logger, testStep, pattern,
+                linkItem.getAbsolutePath(), url.toString(), params));
     }
 
     private ElementPosition conv(WebElement element) {

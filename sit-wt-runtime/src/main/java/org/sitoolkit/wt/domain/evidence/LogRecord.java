@@ -84,8 +84,8 @@ public class LogRecord {
 
     /**
      * 次のメッセージを持つ操作ログオブジェクトを作成します。
-     * 
-     * 
+     *
+     *
      * @param logger
      *            ロガー
      * @param position
@@ -109,7 +109,7 @@ public class LogRecord {
 
     /**
      * 操作ログオブジェクトを作成します。
-     * 
+     *
      * @param logger
      *            ロガー
      * @param position
@@ -134,7 +134,7 @@ public class LogRecord {
 
     /**
      * 操作ログオブジェクトを作成します。
-     * 
+     *
      * @param logger
      *            ロガー
      * @param logLevel
@@ -176,7 +176,7 @@ public class LogRecord {
 
     /**
      * 操作ログオブジェクトを作成します。
-     * 
+     *
      * @param logger
      *            ロガー
      * @param testStep
@@ -198,7 +198,7 @@ public class LogRecord {
 
     /**
      * 操作ログオブジェクトを作成します。
-     * 
+     *
      * @param logger
      *            ロガー
      * @param testStep
@@ -273,6 +273,26 @@ public class LogRecord {
 
     public void setPositions(List<ElementPosition> positions) {
         this.positions = positions;
+    }
+
+    public static LogRecord createLinkRecord(Logger logger, TestStep testStep,
+            MessagePattern messagePattern, String linkItem, String url, Object... params) {
+
+        Object[] logParams = new Object[] { testStep.getItemName(), url };
+        logParams = ArrayUtils.addAll(logParams, params);
+
+        String logMsg = log(messagePattern.getPattern(), logParams);
+        logger.info(logMsg);
+
+        String linkAddedItem = "<a href=\"" + linkItem + "\" target=\"evidence\">"
+                + testStep.getItemName() + "</a>";
+        Object[] evidenceParams = new Object[] { linkAddedItem, url };
+        evidenceParams = ArrayUtils.addAll(evidenceParams, params);
+
+        String evidenceMsg = log(messagePattern.getPattern(), evidenceParams);
+        String testStepNo = testStep == null ? "xxx" : testStep.getNo();
+
+        return new LogRecord(testStepNo, evidenceMsg);
     }
 
 }
