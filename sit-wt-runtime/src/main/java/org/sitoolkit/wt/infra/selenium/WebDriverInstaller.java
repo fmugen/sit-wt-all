@@ -124,8 +124,8 @@ public class WebDriverInstaller {
 
         try {
             if (!installFile.exists()) {
-                if (!"true".equals(System.getProperty("sitwt.proxy.loaded"))) {
-                    ProxySettingService proxyService = new ProxySettingService();
+                if (!ProxySettingService.getInstance().isLoaded()) {
+                    ProxySettingService proxyService = ProxySettingService.getInstance();
                     proxyService.loadProxy();
                 }
 
@@ -189,8 +189,8 @@ public class WebDriverInstaller {
             if (downloadFile.exists()) {
                 LOG.info("{}はダウンロード済みです {}", binaryInfo.sysPropKey, downloadFile.getAbsolutePath());
             } else {
-                if (!"true".equals(System.getProperty("sitwt.proxy.loaded"))) {
-                    ProxySettingService proxyService = new ProxySettingService();
+                if (!ProxySettingService.getInstance().isLoaded()) {
+                    ProxySettingService proxyService = ProxySettingService.getInstance();
                     proxyService.loadProxy();
                 }
 

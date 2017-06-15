@@ -241,7 +241,7 @@ public class EvidenceManager implements ApplicationContextAware {
         appCtx = arg0;
     }
 
-    public String downloadFileName(String scriptName, String caseNo, String testStepNo,
+    public String getDownloadFileName(String scriptName, String caseNo, String testStepNo,
             String itemName, String baseFilename) {
         return StringUtils
                 .join(new String[] { scriptName, caseNo, testStepNo, itemName, baseFilename }, "_");

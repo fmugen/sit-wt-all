@@ -1,8 +1,7 @@
 package org.sitoolkit.wt.domain.evidence;
 
 public enum MessagePattern {
-    項目をXXします("{}({})を{}します"), 項目にXXをYYします("{}({})に{}を{}します"), 項目をXXしました(
-            "{}({})を{}しました"), 項目にXXをYYしました("{}({})に{}を{}しました");
+    項目をXXします("{}({})を{}します"), 項目にXXをYYします("{}({})に{}を{}します");
 
     private String pattern;
 

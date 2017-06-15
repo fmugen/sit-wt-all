@@ -10,6 +10,18 @@ import org.sitoolkit.wt.util.infra.proxysetting.ProxySetting;
 public class ProxySettingService {
     private static final Logger LOG = Logger.getLogger(ProxySettingService.class.getName());
 
+    private static ProxySettingService proxySettingService = new ProxySettingService();
+
+    private boolean loaded;
+
+    private ProxySettingService() {
+        loaded = false;
+    }
+
+    public static ProxySettingService getInstance() {
+        return proxySettingService;
+    }
+
     public void loadProxy() {
 
         try {
@@ -30,7 +42,7 @@ public class ProxySettingService {
         } catch (Exception exp) {
             LOG.log(Level.WARNING, "set proxy failed", exp);
         } finally {
-            System.setProperty("sitwt.proxy.loaded", "true");
+            loaded = true;
         }
     }
 
@@ -48,5 +60,9 @@ public class ProxySettingService {
         } else {
             LOG.log(Level.INFO, "proxy settings is disabled");
         }
+    }
+
+    public boolean isLoaded() {
+        return loaded;
     }
 }

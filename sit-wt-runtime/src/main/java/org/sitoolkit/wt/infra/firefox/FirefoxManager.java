@@ -58,8 +58,8 @@ public class FirefoxManager {
         } else {
 
             try {
-                if (!"true".equals(System.getProperty("sitwt.proxy.loaded"))) {
-                    ProxySettingService proxyService = new ProxySettingService();
+                if (!ProxySettingService.getInstance().isLoaded()) {
+                    ProxySettingService proxyService = ProxySettingService.getInstance();
                     proxyService.loadProxy();
                 }
 
@@ -116,8 +116,8 @@ public class FirefoxManager {
             LOG.info("Firefoxはダウンロード済みです {}", ffInstaller.getAbsolutePath());
         } else {
             try {
-                if (!"true".equals(System.getProperty("sitwt.proxy.loaded"))) {
-                    ProxySettingService proxyService = new ProxySettingService();
+                if (!ProxySettingService.getInstance().isLoaded()) {
+                    ProxySettingService proxyService = ProxySettingService.getInstance();
                     proxyService.loadProxy();
                 }
 
@@ -167,8 +167,8 @@ public class FirefoxManager {
             LOG.info("Firefoxはダウンロード済みです {}", ffInstaller.getAbsolutePath());
         } else {
             try {
-                if (!"true".equals(System.getProperty("sitwt.proxy.loaded"))) {
-                    ProxySettingService proxyService = new ProxySettingService();
+                if (!ProxySettingService.getInstance().isLoaded()) {
+                    ProxySettingService proxyService = ProxySettingService.getInstance();
                     proxyService.loadProxy();
                 }
 

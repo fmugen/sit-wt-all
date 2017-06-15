@@ -52,9 +52,9 @@ public class DownloadOperationTest extends SitTesterTestBase {
         String caseNo = "001";
         String baseFileName = targetFile.getName();
         File firstEvidence = new File(evidenceDir,
-                em.downloadFileName(testScriptName, caseNo, "2", "参考資料", baseFileName));
+                em.getDownloadFileName(testScriptName, caseNo, "2", "参考資料", baseFileName));
         File secondEvidence = new File(evidenceDir,
-                em.downloadFileName(testScriptName, caseNo, "5", "参考資料表示", baseFileName));
+                em.getDownloadFileName(testScriptName, caseNo, "5", "参考資料表示", baseFileName));
 
         assertThat(DigestUtils.md5Hex(new FileInputStream(firstEvidence)), is(targetHash));
         assertThat(DigestUtils.md5Hex(new FileInputStream(secondEvidence)), is(targetHash));

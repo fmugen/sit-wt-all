@@ -52,13 +52,13 @@ public class DownloadOperation extends SeleniumOperation {
             URL targetUrl = (testStep.getLocator().isNa()) ? new URL(seleniumDriver.getCurrentUrl())
                     : new URL(findElement(testStep.getLocator()).getAttribute("href"));
 
-            String fileName = em.downloadFileName(current.getScriptName(), current.getCaseNo(),
+            String fileName = em.getDownloadFileName(current.getScriptName(), current.getCaseNo(),
                     current.getTestStepNo(), current.getItemName(),
-                    StringUtils.substringAfterLast(targetUrl.toString(), "/"));
+                    StringUtils.substringAfterLast(targetUrl.getFile(), "/"));
             File downloadFile = new File(em.getDownloadDir(), fileName);
 
-            if (!"true".equals(System.getProperty("sitwt.proxy.loaded"))) {
-                ProxySettingService proxyService = new ProxySettingService();
+            if (!ProxySettingService.getInstance().isLoaded()) {
+                ProxySettingService proxyService = ProxySettingService.getInstance();
                 proxyService.loadProxy();
             }
             FileUtils.copyURLToFile(targetUrl, downloadFile);
@@ -67,7 +67,7 @@ public class DownloadOperation extends SeleniumOperation {
                     + "\" target=\"evidence\">" + testStep.getItemName() + "</a>",
                     testStep.getLocator(), "ダウンロード" };
             String linkAddedMsg = MessageFormatter
-                    .arrayFormat(MessagePattern.項目をXXしました.getPattern(), params).getMessage();
+                    .arrayFormat(MessagePattern.項目をXXします.getPattern(), params).getMessage();
 
             ctx.getRecords().get(ctx.getRecords().size() - 1).setLog(linkAddedMsg);
 
