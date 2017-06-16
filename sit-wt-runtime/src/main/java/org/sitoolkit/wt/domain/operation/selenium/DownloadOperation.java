@@ -50,18 +50,17 @@ public class DownloadOperation extends SeleniumOperation {
             URL targetUrl = (testStep.getLocator().isNa()) ? new URL(seleniumDriver.getCurrentUrl())
                     : new URL(findElement(testStep.getLocator()).getAttribute("href"));
 
-            String fileName = em.getDownloadFileName(current.getScriptName(), current.getCaseNo(),
+            ctx.info(MessagePattern.項目をXXします, targetUrl, "ダウンロード");
+
+            File downloadFile = em.buildDownloadFile(current.getScriptName(), current.getCaseNo(),
                     current.getTestStepNo(), current.getItemName(),
                     StringUtils.substringAfterLast(targetUrl.getFile(), "/"));
-            File downloadFile = new File(em.getDownloadDir(), fileName);
 
-            if (!ProxySettingService.getInstance().isLoaded()) {
-                ProxySettingService proxyService = ProxySettingService.getInstance();
-                proxyService.loadProxy();
-            }
+            ProxySettingService.getInstance().loadProxy();
             FileUtils.copyURLToFile(targetUrl, downloadFile);
 
-            ctx.downloadInfo(MessagePattern.項目をXXします, downloadFile, targetUrl, "ダウンロード");
+            ctx.replaceEvidenceMsg(MessagePattern.リンク項目をXXします, downloadFile, "evidence", targetUrl,
+                    "ダウンロード");
 
         } catch (Exception exp) {
             throw new TestException(exp);

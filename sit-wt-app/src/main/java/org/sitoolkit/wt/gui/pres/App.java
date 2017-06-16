@@ -44,8 +44,7 @@ public class App extends Application {
         FxContext.setPrimaryStage(primaryStage);
         FxContext.setHostServices(getHostServices());
 
-        ProxySettingService proxyService = ProxySettingService.getInstance();
-        proxyService.loadProxy();
+        ProxySettingService.getInstance().loadProxy();
 
         Executors.newSingleThreadExecutor().submit(() -> MavenUtils.findAndInstall());
 

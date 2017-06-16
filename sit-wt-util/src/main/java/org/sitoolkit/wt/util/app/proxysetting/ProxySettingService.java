@@ -24,6 +24,8 @@ public class ProxySettingService {
 
     public void loadProxy() {
 
+        if (loaded) return;
+
         try {
             ProxySetting proxySetting = MavenUtils.readProxySetting();
 
@@ -60,9 +62,5 @@ public class ProxySettingService {
         } else {
             LOG.log(Level.INFO, "proxy settings is disabled");
         }
-    }
-
-    public boolean isLoaded() {
-        return loaded;
     }
 }

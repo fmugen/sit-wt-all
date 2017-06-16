@@ -47,14 +47,13 @@ public class DownloadOperationTest extends SitTesterTestBase {
         File targetFile = new File("src/main/webapp/pdf/DownloadTest.pdf");
         String targetHash = DigestUtils.md5Hex(new FileInputStream(targetFile));
 
-        String evidenceDir = em.getDownloadDir().getAbsolutePath();
         String testScriptName = StringUtils.substringAfterLast(getTestScriptPath(), "/");
         String caseNo = "001";
         String baseFileName = targetFile.getName();
-        File firstEvidence = new File(evidenceDir,
-                em.getDownloadFileName(testScriptName, caseNo, "2", "参考資料", baseFileName));
-        File secondEvidence = new File(evidenceDir,
-                em.getDownloadFileName(testScriptName, caseNo, "5", "参考資料表示", baseFileName));
+        File firstEvidence = em.buildDownloadFile(testScriptName, caseNo, "2", "参考資料",
+                baseFileName);
+        File secondEvidence = em.buildDownloadFile(testScriptName, caseNo, "5", "参考資料表示",
+                baseFileName);
 
         assertThat(DigestUtils.md5Hex(new FileInputStream(firstEvidence)), is(targetHash));
         assertThat(DigestUtils.md5Hex(new FileInputStream(secondEvidence)), is(targetHash));

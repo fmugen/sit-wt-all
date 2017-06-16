@@ -241,16 +241,19 @@ public class EvidenceManager implements ApplicationContextAware {
         appCtx = arg0;
     }
 
-    public String getDownloadFileName(String scriptName, String caseNo, String testStepNo,
+    public File buildDownloadFile(String scriptName, String caseNo, String testStepNo,
             String itemName, String baseFilename) {
-        return StringUtils
-                .join(new String[] { scriptName, caseNo, testStepNo, itemName, baseFilename }, "_");
-    }
 
-    public File getDownloadDir() {
         downloadDir = new File(evidenceDir, "download");
         downloadDir.mkdirs();
-        return downloadDir;
+        if (!downloadDir.exists()) {
+            throw new TestException("ダウンロードファイル出力ディレクトリの作成に失敗しました" + downloadDir.getAbsoluteFile());
+        }
+
+        String fileName = StringUtils
+                .join(new String[] { scriptName, caseNo, testStepNo, itemName, baseFilename }, "_");
+
+        return new File(downloadDir, fileName);
     }
 
 }

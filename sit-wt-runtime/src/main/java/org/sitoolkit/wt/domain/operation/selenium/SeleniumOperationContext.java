@@ -41,9 +41,8 @@ public class SeleniumOperationContext {
         info(null, pattern, params);
     }
 
-    public void downloadInfo(MessagePattern pattern, File linkItem, URL url, Object... params) {
-        records.add(LogRecord.createLinkRecord(logger, testStep, pattern,
-                linkItem.getAbsolutePath(), url.toString(), params));
+    public void info(MessagePattern pattern, URL url, Object... params) {
+        records.add(LogRecord.create(logger, url, testStep, pattern, params));
     }
 
     private ElementPosition conv(WebElement element) {
@@ -69,6 +68,13 @@ public class SeleniumOperationContext {
             }
         }
 
+    }
+
+    public void replaceEvidenceMsg(MessagePattern pattern, File linkFile, String linkKind, URL url,
+            Object... params) {
+
+        records.get(records.size() - 1).setLogFromPattern(pattern, linkFile, linkKind, url,
+                testStep, params);
     }
 
     public Logger getLogger() {

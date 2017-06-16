@@ -15,6 +15,8 @@
  */
 package org.sitoolkit.wt.domain.evidence;
 
+import java.io.File;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -174,6 +176,15 @@ public class LogRecord {
         return new LogRecord(testStepNo, msg);
     }
 
+    public static LogRecord create(Logger logger, URL url, TestStep testStep,
+            MessagePattern messagePattern, Object... params) {
+
+        Object[] newParams = new Object[] { testStep.getItemName(), url.toString() };
+        newParams = ArrayUtils.addAll(newParams, params);
+
+        return create(logger, LogLevelVo.INFO, testStep, messagePattern.getPattern(), newParams);
+    }
+
     /**
      * 操作ログオブジェクトを作成します。
      *
@@ -275,24 +286,13 @@ public class LogRecord {
         this.positions = positions;
     }
 
-    public static LogRecord createLinkRecord(Logger logger, TestStep testStep,
-            MessagePattern messagePattern, String linkItem, String url, Object... params) {
+    public void setLogFromPattern(MessagePattern pattern, File linkFile, String linkKind, URL url,
+            TestStep testStep, Object... params) {
 
-        Object[] logParams = new Object[] { testStep.getItemName(), url };
-        logParams = ArrayUtils.addAll(logParams, params);
+        Object[] newParams = new Object[] { linkFile.getAbsolutePath(), linkKind,
+                testStep.getItemName(), url.toString() };
 
-        String logMsg = log(messagePattern.getPattern(), logParams);
-        logger.info(logMsg);
-
-        String linkAddedItem = "<a href=\"" + linkItem + "\" target=\"evidence\">"
-                + testStep.getItemName() + "</a>";
-        Object[] evidenceParams = new Object[] { linkAddedItem, url };
-        evidenceParams = ArrayUtils.addAll(evidenceParams, params);
-
-        String evidenceMsg = log(messagePattern.getPattern(), evidenceParams);
-        String testStepNo = testStep == null ? "xxx" : testStep.getNo();
-
-        return new LogRecord(testStepNo, evidenceMsg);
+        log = log(pattern.getPattern(), ArrayUtils.addAll(newParams, params));
     }
 
 }
