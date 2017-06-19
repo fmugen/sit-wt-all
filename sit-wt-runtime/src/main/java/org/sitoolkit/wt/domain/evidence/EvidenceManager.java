@@ -63,6 +63,7 @@ public class EvidenceManager implements ApplicationContextAware {
     private Template tmpl;
     private ApplicationContext appCtx;
     private File downloadDir;
+    private boolean downlaodDirCreated;
 
     @Resource
     PropertyManager pm;
@@ -83,6 +84,7 @@ public class EvidenceManager implements ApplicationContextAware {
         if (!imgDir.exists()) {
             throw new TestException("スクリーンショット出力ディレクトリの作成に失敗しました" + imgDir.getAbsoluteFile());
         }
+        downlaodDirCreated = false;
         try {
             Properties prop = PropertyUtils.load("/velocity.properties", false);
             Velocity.init(prop);
@@ -244,10 +246,14 @@ public class EvidenceManager implements ApplicationContextAware {
     public File buildDownloadFile(String scriptName, String caseNo, String testStepNo,
             String itemName, String baseFilename) {
 
-        downloadDir = new File(evidenceDir, "download");
-        downloadDir.mkdirs();
-        if (!downloadDir.exists()) {
-            throw new TestException("ダウンロードファイル出力ディレクトリの作成に失敗しました" + downloadDir.getAbsoluteFile());
+        if (!downlaodDirCreated) {
+            downloadDir = new File(evidenceDir, "download");
+            downloadDir.mkdirs();
+            if (!downloadDir.exists()) {
+                throw new TestException(
+                        "ダウンロードファイル出力ディレクトリの作成に失敗しました" + downloadDir.getAbsoluteFile());
+            }
+            downlaodDirCreated = true;
         }
 
         String fileName = StringUtils
