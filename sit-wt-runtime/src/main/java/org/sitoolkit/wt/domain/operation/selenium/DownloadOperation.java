@@ -46,21 +46,21 @@ public class DownloadOperation extends SeleniumOperation {
     @Override
     public void execute(TestStep testStep, SeleniumOperationContext ctx) {
 
+        String urlString = (testStep.getLocator().isNa()) ? seleniumDriver.getCurrentUrl()
+                : findElement(testStep.getLocator()).getAttribute("href");
+
+        File downloadFile = em.buildDownloadFile(current.getScriptName(), current.getCaseNo(),
+                current.getTestStepNo(), current.getItemName(),
+                StringUtils.substringAfterLast(urlString, "/"));
+
+        ctx.info(MessagePattern.項目をXXします_URL_エビデンス, "ダウンロード", urlString,
+                downloadFile.getAbsolutePath());
+
         try {
-            URL targetUrl = (testStep.getLocator().isNa()) ? new URL(seleniumDriver.getCurrentUrl())
-                    : new URL(findElement(testStep.getLocator()).getAttribute("href"));
-
-            ctx.info(MessagePattern.項目をXXします, targetUrl, "ダウンロード");
-
-            File downloadFile = em.buildDownloadFile(current.getScriptName(), current.getCaseNo(),
-                    current.getTestStepNo(), current.getItemName(),
-                    StringUtils.substringAfterLast(targetUrl.getFile(), "/"));
+            URL targetUrl = new URL(urlString);
 
             ProxySettingService.getInstance().loadProxy();
             FileUtils.copyURLToFile(targetUrl, downloadFile);
-
-            ctx.replaceEvidenceMsg(MessagePattern.リンク項目をXXします, downloadFile, "evidence", targetUrl,
-                    "ダウンロード");
 
         } catch (Exception exp) {
             throw new TestException(exp);

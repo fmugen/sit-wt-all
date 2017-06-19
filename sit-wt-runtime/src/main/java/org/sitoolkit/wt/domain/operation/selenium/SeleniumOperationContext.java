@@ -1,7 +1,5 @@
 package org.sitoolkit.wt.domain.operation.selenium;
 
-import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,10 +39,6 @@ public class SeleniumOperationContext {
         info(null, pattern, params);
     }
 
-    public void info(MessagePattern pattern, URL url, Object... params) {
-        records.add(LogRecord.create(logger, url, testStep, pattern, params));
-    }
-
     private ElementPosition conv(WebElement element) {
         if (element == null) {
             return ElementPosition.EMPTY;
@@ -68,13 +62,6 @@ public class SeleniumOperationContext {
             }
         }
 
-    }
-
-    public void replaceEvidenceMsg(MessagePattern pattern, File linkFile, String linkKind, URL url,
-            Object... params) {
-
-        records.get(records.size() - 1).setLogFromPattern(pattern, linkFile, linkKind, url,
-                testStep, params);
     }
 
     public Logger getLogger() {

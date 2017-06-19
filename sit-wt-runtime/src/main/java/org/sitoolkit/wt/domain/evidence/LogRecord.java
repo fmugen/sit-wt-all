@@ -15,8 +15,6 @@
  */
 package org.sitoolkit.wt.domain.evidence;
 
-import java.io.File;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -176,15 +174,6 @@ public class LogRecord {
         return new LogRecord(testStepNo, msg);
     }
 
-    public static LogRecord create(Logger logger, URL url, TestStep testStep,
-            MessagePattern messagePattern, Object... params) {
-
-        Object[] newParams = new Object[] { testStep.getItemName(), url.toString() };
-        newParams = ArrayUtils.addAll(newParams, params);
-
-        return create(logger, LogLevelVo.INFO, testStep, messagePattern.getPattern(), newParams);
-    }
-
     /**
      * 操作ログオブジェクトを作成します。
      *
@@ -284,15 +273,6 @@ public class LogRecord {
 
     public void setPositions(List<ElementPosition> positions) {
         this.positions = positions;
-    }
-
-    public void setLogFromPattern(MessagePattern pattern, File linkFile, String linkKind, URL url,
-            TestStep testStep, Object... params) {
-
-        Object[] newParams = new Object[] { linkFile.getAbsolutePath(), linkKind,
-                testStep.getItemName(), url.toString() };
-
-        log = log(pattern.getPattern(), ArrayUtils.addAll(newParams, params));
     }
 
 }
