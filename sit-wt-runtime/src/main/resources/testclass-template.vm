@@ -15,8 +15,8 @@ public class ${test.fileBase} extends SitTesterTestBase {
 
 #foreach ($caseNo in $test.caseNos)
     @Test
-    public void test$caseNo() {
-        test();
+    public void test$test.sanitizeCaseNo($caseNo)() {
+        test("$test.escape($caseNo)", null);
     }
 #end
 
