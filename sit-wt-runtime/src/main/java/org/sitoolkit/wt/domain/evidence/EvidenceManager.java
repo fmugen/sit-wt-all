@@ -159,8 +159,10 @@ public class EvidenceManager implements ApplicationContextAware {
     private String buildScreenshotFileName(String scriptName, String caseNo, String testStepNo,
             String itemName, String timing) {
 
-        return StrUtils.sanitizeMetaCharacter(StringUtils.join(
-                new String[] { scriptName, caseNo, testStepNo, itemName, timing }, "_") + ".png");
+        return StrUtils
+                .sanitizeMetaCharacter(StringUtils.join(
+                        new String[] { scriptName, caseNo, testStepNo, itemName, timing }, "_"))
+                + ".png";
     }
 
     /**
@@ -197,7 +199,7 @@ public class EvidenceManager implements ApplicationContextAware {
         }
 
         return StrUtils.sanitizeMetaCharacter(
-                StringUtils.join(new String[] { scriptName, caseNo }, "_") + resultHtml);
+                StringUtils.join(new String[] { scriptName, caseNo }, "_")) + resultHtml;
 
     }
 
@@ -257,8 +259,9 @@ public class EvidenceManager implements ApplicationContextAware {
             }
         }
 
-        String fileName = StrUtils.sanitizeMetaCharacter(StringUtils.join(
-                new String[] { scriptName, caseNo, testStepNo, itemName, baseFilename }, "_"));
+        String fileName = StrUtils.sanitizeMetaCharacter(
+                StringUtils.join(new String[] { scriptName, caseNo, testStepNo, itemName, }, "_"))
+                + "_" + baseFilename;
 
         return new File(downloadDir, fileName);
     }

@@ -61,7 +61,7 @@ public class TestClass extends TemplateModel {
         this.pkg = pkg;
     }
 
-    public String sanitizeCaseNo(String caseNo) {
+    public String sanitizeFunctionName(String caseNo) {
         return StrUtils.sanitizeMetaCharacter(caseNo);
     }
 

@@ -48,7 +48,7 @@ public class StrUtils {
     }
 
     public static String sanitizeMetaCharacter(String str) {
-        String regex = "[\\\\/:*?\"<>|]";
+        String regex = "[ !\"#$%&'()=~|\\-^\\\\@\\[\\]:;`\\{\\}*+<>?,./]";
         return str.replaceAll(regex, "_");
     }
 
