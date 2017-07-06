@@ -43,6 +43,7 @@ public class StoreElementValueOperation extends SeleniumOperation {
 
         switch (type[0]) {
 
+            case "":
             case "text":
                 value = element.getText();
                 break;
@@ -69,7 +70,7 @@ public class StoreElementValueOperation extends SeleniumOperation {
         }
 
         if (value != null) {
-            log.info("変数を定義します {}={}", name, value);
+            ctx.info(element, "変数を定義します {}={}", name, value);
             context.addParam(name, value);
         }
     }
