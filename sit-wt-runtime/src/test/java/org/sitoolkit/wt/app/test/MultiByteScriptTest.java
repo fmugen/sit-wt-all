@@ -1,26 +1,24 @@
 package org.sitoolkit.wt.app.test;
 
+import javax.annotation.Resource;
+
 import org.junit.Test;
 import org.sitoolkit.wt.domain.tester.SitTesterTestBase;
-import org.sitoolkit.wt.domain.testscript.TestScript;
-import org.sitoolkit.wt.domain.testscript.TestScriptCatalog;
-import org.sitoolkit.wt.infra.ApplicationContextHelper;
+import org.springframework.context.ConfigurableApplicationContext;
 
 public class MultiByteScriptTest extends SitTesterTestBase {
 
+    @Resource
+    ConfigurableApplicationContext appCtx;
+
     @Test
     public void testMultiByteCase() {
-        TestCase testCase = TestCase.parse(getTestScriptPath());
 
-        String scriptPath = testCase.getScriptPath();
-        String sheetName = testCase.getSheetName();
-        TestScriptCatalog catalog = ApplicationContextHelper.getBean(TestScriptCatalog.class);
-        TestScript script = catalog.get(scriptPath, sheetName);
+        boolean isParallel = Boolean.getBoolean("sitwt.parallel");
+        boolean isEvidenceOpen = Boolean.getBoolean("sitwt.open-evidence");
+        TestRunner testRunner = new TestRunner();
 
-        for (String caseNo : script.getCaseNoMap().keySet()) {
-            setUp();
-            test(caseNo, null);
-        }
+        testRunner.runScript(appCtx, getTestScriptPath(), isParallel, isEvidenceOpen);
     }
 
     @Override
